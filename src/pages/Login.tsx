@@ -2,6 +2,7 @@ import AuthLayout from '../components/layouts/AuthLayout'
 import LoginIllustration from '../assets/auth/svg_login.svg'
 import AuthForm from '../components/ui/AuthForm'
 import Input from '../components/ui/Input'
+import { Link } from 'react-router-dom'
 
 const Login = () => {
   return (
@@ -22,9 +23,9 @@ const Login = () => {
             placeholder="*****************" 
           />
           <div className="flex justify-end -mt-2 mb-6">
-            <a href="#" className="text-[15px] text-blue hover:opacity-70 transition-opacity">
+            <Link to="/forgot-password" className="text-[15px] text-blue hover:opacity-70 transition-opacity">
               Forgot password?
-            </a>
+            </Link>
           </div>
           <div>
             <button className="bg-blue text-white px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer">
