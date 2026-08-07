@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-geist: 'Geist', sans-serif;
+  --color-background: #fff;
+  --color-white : #fff;
+  --color-gray-light : #EEEEEE;
+  --color-accent: #188AF9;
+  --color-blue: #1E293B;
+  --color-success: #68A06C;
+  --color-error: #CB3030;
+  --color-button-dark: #1C2434;
+  --color-button-dark-hover: #121824;
+} 
+
+@layer base {
+  body {
+    @apply bg-background  font-sans antialiased;
+  }
+} 
+  
