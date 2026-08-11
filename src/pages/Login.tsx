@@ -12,7 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const { mutateAsync: login, isPending } = useLogin()
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
