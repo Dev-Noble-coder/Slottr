@@ -1,6 +1,8 @@
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
+import { Toaster } from 'sonner'
+
 import Login from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -8,6 +10,8 @@ import AcceptInvitation from './pages/AcceptInvitation'
 
 const App = () => {
   return (
+    <>
+    <Toaster />
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
@@ -16,7 +20,8 @@ const App = () => {
         <Route path = "/accept-invitation/activate" element={<AcceptInvitation />} />
       </Routes>
     </Router>
+    </>
   )
 }
  
-export default App
+export default App  

@@ -1,4 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useSearchParams, useNavigate } from "react-router-dom"
+import { checkTokenValidity } from "../services/authService"
+import { toast } from "sonner"
 import AuthLayout from "../components/layouts/AuthLayout"
 import ResetPasswordIllustration from '../assets/auth/svg_reset_password.svg'
 import AuthForm from "../components/ui/AuthForm"
@@ -6,12 +9,34 @@ import Input from "../components/ui/Input"
 import Modal from "../components/ui/Modal"
 
 const AcceptInvitation = () => {
- const [password, setPassword] = useState('')
+    const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [modalOpen, setModalOpen] = useState(false)
+    const [searchParams] = useSearchParams()
+    const navigate = useNavigate()
+    const token = searchParams.get("token")
+
+    
 
     const hasMinLength = password.length >= 8;
     const hasNumber = /\d/.test(password);
+
+    useEffect(() => {
+        const checkToken = async () => {
+            if (token) {
+                const res = await checkTokenValidity(token);
+                if (res.status == "invalid") {
+                    toast.error("Token is invalid.")
+                    navigate("/");
+                }else {
+                    toast.success("Token is valid.")
+                }
+            }
+        };   
+        setTimeout(() => {
+            checkToken();
+        }, 1000);
+    }, []);
 
     return (
         <AuthLayout illustration={ResetPasswordIllustration}>
