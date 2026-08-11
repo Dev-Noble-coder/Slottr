@@ -7,3 +7,14 @@ export async function checkTokenValidity(token: string){
     })
     return res.data;
 }
+
+
+export async function createPassword(data: {}){
+    const res = await api.post("api/admin/accept-invitation", data)
+    return res.data;      
+}
+
+export async function login(data: any){
+    const res = await api.post("api/users/login", data)
+    return res.data;      
+}

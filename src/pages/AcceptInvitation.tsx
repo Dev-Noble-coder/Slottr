@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
-import { checkTokenValidity } from "../services/authService"
+import { useCheckTokenValidity, useAcceptInvitation } from "../hooks/useAuth"
 import { toast } from "sonner"
 import AuthLayout from "../components/layouts/AuthLayout"
 import ResetPasswordIllustration from '../assets/auth/svg_reset_password.svg'
@@ -16,27 +16,52 @@ const AcceptInvitation = () => {
     const navigate = useNavigate()
     const token = searchParams.get("token")
 
-    
+    const { data: tokenData, isError: tokenError } = useCheckTokenValidity(token);
+    const { mutateAsync: acceptInvitation, isPending: isLoading } = useAcceptInvitation();
 
     const hasMinLength = password.length >= 8;
     const hasNumber = /\d/.test(password);
+    const hasSpecialCharacter = /[!@#$%^&*()]/.test(password);
 
     useEffect(() => {
-        const checkToken = async () => {
-            if (token) {
-                const res = await checkTokenValidity(token);
-                if (res.status == "invalid") {
-                    toast.error("Token is invalid.")
-                    navigate("/");
-                }else {
-                    toast.success("Token is valid.")
-                }
+        if (tokenData) {
+            if (tokenData.status === "invalid") {
+                toast.error("Token is invalid.")
+                navigate("/");
+            } else {
+                toast.success("Token is valid.")
             }
-        };   
-        setTimeout(() => {
-            checkToken();
-        }, 1000);
-    }, []);
+        }
+        if (tokenError) {
+            toast.error("Failed to validate token.")
+            navigate("/");
+        }
+    }, [tokenData, tokenError, navigate]);
+
+
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+
+        try {
+            const res = await acceptInvitation({ password, token, confirmPassword });
+
+            if (res.status == 200) {
+                setModalOpen(true)
+                // reset fields
+                setPassword('')
+                setConfirmPassword('')
+
+                // redirect to login
+                setTimeout(() => {
+                    navigate("/");
+                }, 2000);
+            } else {
+                toast.error("Failed to create password.")
+            }
+        } catch (error) {
+            toast.error("An error occurred. Please try again.")
+        }
+    }
 
     return (
         <AuthLayout illustration={ResetPasswordIllustration}>
@@ -76,27 +101,45 @@ const AcceptInvitation = () => {
                                 Must contain at least one number
                             </span>
                         </div>
+                        <div className="flex items-center gap-3">
+                            <div className={`w-3.5 h-3.5 rounded-full ${hasSpecialCharacter ? 'bg-[var(--color-success)]' : 'bg-[#E5E7EB]'}`}></div>
+                            <span className={`text-[14px] ${hasSpecialCharacter ? 'text-[var(--color-blue)]' : 'text-[#9CA3AF]'}`}>
+                                Must contain at least one special character (!@#$%^&*())
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <div className='mt-8'>
                     <button
                         className="bg-blue text-white px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={() => setModalOpen(true)}
-                        disabled={!hasMinLength || !hasNumber || password !== confirmPassword || password === ''}
+                        onClick={handleSubmit}
+                        disabled={isLoading || !hasMinLength || !hasNumber || !hasSpecialCharacter || password !== confirmPassword || password === ''}
                     >
-                        Reset Password
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
+                        {isLoading ? (
+                            <>
+                                Creating...
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </>
+                        ) : (
+                            <>
+                                Create Password
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </>
+                        )}
                     </button>
                 </div>
 
                 <Modal
                     type="success"
                     title="Successful!"
-                    message="Your password has been reset successfully. You can now login with your new password."
+                    message="Your password has been set successfully. You can now login with your password."
                     open={modalOpen}
                     buttonInfo="Login"
                     onClose={() => setModalOpen(false)}

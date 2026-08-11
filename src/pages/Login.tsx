@@ -1,10 +1,43 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import AuthLayout from '../components/layouts/AuthLayout'
 import LoginIllustration from '../assets/auth/svg_login.svg'
 import AuthForm from '../components/ui/AuthForm'
 import Input from '../components/ui/Input'
-import { Link } from 'react-router-dom'
+import { useLogin } from '../hooks/useAuth'
+import { toast } from 'sonner'
 
 const Login = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const { mutateAsync: login, isPending } = useLogin()
+  const navigate = useNavigate()
+
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setError('')
+
+    if (!email || !password) {
+      setError('invalid email or password')
+      return
+    }
+
+    try {
+      const res = await login({ email, password })
+      if (res?.status === "invalid" || !res) {
+        setError('invalid email or password')
+      } else {
+        // Success login, redirect to dashboard or home
+        toast.success("Login Successful")
+        toast.success("Dashboard in Progress")
+        // navigate('/dashboard')
+      }
+    } catch (err) {
+      setError('invalid email or password')
+    }
+  }
+
   return (
     <AuthLayout illustration={LoginIllustration}>
       <AuthForm>
@@ -16,11 +49,16 @@ const Login = () => {
             label="Login" 
             type="email" 
             placeholder="2pacshakur@gmail.com" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={error}
           />
           <Input 
             label="Password" 
             type="password" 
             placeholder="*****************" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <div className="flex justify-end -mt-2 mb-6">
             <Link to="/forgot-password" className="text-[15px] text-blue hover:opacity-70 transition-opacity">
@@ -28,12 +66,28 @@ const Login = () => {
             </Link>
           </div>
           <div>
-            <button className="bg-blue text-white px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer">
-              Login
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
+            <button 
+              onClick={handleLogin}
+              disabled={isPending}
+              className="bg-blue text-white px-6 py-2.5 rounded-full font-medium flex items-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPending ? (
+                <>
+                  Logging in...
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  Login
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </>
+              )}
             </button>
           </div>
         </div>

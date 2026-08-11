@@ -2,10 +2,11 @@ import React, { useState, type InputHTMLAttributes } from 'react';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
+  error?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, type = 'text', className = '', ...props }, ref) => {
+  ({ label, type = 'text', className = '', error, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
@@ -19,7 +20,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             type={inputType}
-            className="w-full bg-transparent border-b border-[#1E293B] text-[#1E293B] pb-2 text-[17px] outline-none focus:border-[#1E293B] transition-colors placeholder:text-[#A1A1AA] placeholder:font-normal"
+            className={`w-full bg-transparent border-b pb-2 text-[17px] outline-none transition-colors placeholder:text-[#A1A1AA] placeholder:font-normal ${
+              error
+                ? 'border-[#CB3030] text-[#CB3030] focus:border-[#CB3030]'
+                : 'border-[#1E293B] text-[#1E293B] focus:border-[#1E293B]'
+            }`}
             {...props}
           />
           {isPassword && (
@@ -46,6 +51,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             </button>
           )}
         </div>
+        {error && (
+          <span className="text-[#CB3030] text-[14px] mt-1">{error}</span>
+        )}
       </div>
     );
   }
