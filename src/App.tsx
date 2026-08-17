@@ -3,10 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import { Toaster } from 'sonner'
 
-import Login from './pages/Login'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import AcceptInvitation from './pages/AcceptInvitation'
+import Login from './pages/auth/Login'
+import ForgotPassword from './pages/auth/ForgotPassword'
+import ResetPassword from './pages/auth/ResetPassword'
+import AcceptInvitation from './pages/admin/auth/AcceptInvitation'
+import AdminLogin from './pages/admin/auth/AdminLogin'
+
+import LandingPage from './pages/home/LandingPage'
 
 const App = () => {
   return (
@@ -14,10 +17,15 @@ const App = () => {
     <Toaster />
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* Shared Auth Pages */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path = "/accept-invitation/activate" element={<AcceptInvitation />} />
+        
+        {/* Admin Specific Pages */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/accept-invitation/activate" element={<AcceptInvitation />} />
       </Routes>
     </Router>
     </>

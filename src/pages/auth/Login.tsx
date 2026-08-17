@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import AuthLayout from '../components/layouts/AuthLayout'
-import LoginIllustration from '../assets/auth/svg_login.svg'
-import AuthForm from '../components/ui/AuthForm'
-import Input from '../components/ui/Input'
-import { useLogin } from '../hooks/useAuth'
+import { Link } from 'react-router-dom'
+import AuthLayout from '../../components/layouts/AuthLayout'
+import LoginIllustration from '../../assets/auth/svg_login.svg'
+import AuthForm from '../../components/ui/AuthForm'
+import Input from '../../components/ui/Input'
+import { useLogin } from '../../hooks/useAuth'
 import { toast } from 'sonner'
 
 const Login = () => {

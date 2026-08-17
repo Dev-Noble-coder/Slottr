@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
-import { useCheckTokenValidity, useAcceptInvitation } from "../hooks/useAuth"
+import { useCheckTokenValidity, useAcceptInvitation } from "../../../hooks/useAuth"
 import { toast } from "sonner"
-import AuthLayout from "../components/layouts/AuthLayout"
-import ResetPasswordIllustration from '../assets/auth/svg_reset_password.svg'
-import AuthForm from "../components/ui/AuthForm"
-import Input from "../components/ui/Input"
-import Modal from "../components/ui/Modal"
+import AuthLayout from "../../../components/layouts/AuthLayout"
+import ResetPasswordIllustration from '../../../assets/auth/svg_reset_password.svg'
+import AuthForm from "../../../components/ui/AuthForm"
+import Input from "../../../components/ui/Input"
+import Modal from "../../../components/ui/Modal"
 
 const AcceptInvitation = () => {
     const [password, setPassword] = useState('')

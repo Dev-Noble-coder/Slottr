@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import AuthLayout from '../components/layouts/AuthLayout'
-import ForgotPasswordIllustration from '../assets/auth/svg_forgot_password.svg'
-import AuthForm from '../components/ui/AuthForm'
-import Input from '../components/ui/Input'
-import Modal from '../components/ui/Modal'
+import AuthLayout from '../../components/layouts/AuthLayout'
+import ForgotPasswordIllustration from '../../assets/auth/svg_forgot_password.svg'
+import AuthForm from '../../components/ui/AuthForm'
+import Input from '../../components/ui/Input'
+import Modal from '../../components/ui/Modal'
 
 const ForgotPassword = () => {
 
