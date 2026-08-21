@@ -15,6 +15,31 @@ export async function createPassword(data: {}){
 }
 
 export async function login(data: any){
-    const res = await api.post("api/users/login", data)
+    const res = await api.post("api/customer/login", data)
+    return res.data;      
+}
+
+export async function signup(data: any){
+    const res = await api.post("api/users/signup", data)   
+    return res.data;      
+}
+
+export async function providerLogin(data: any){
+    const res = await api.post("api/provider/login", data)
+    return res.data;      
+}
+
+export async function providerSignup(data: any){
+    const res = await api.post("api/provider/signup", data)
+    return res.data;      
+}
+
+export async function forgotPassword(data: any){
+    const res = await api.post("api/users/forgot-password", data)
+    return res.data;      
+}
+
+export async function resetPassword(data: any){
+    const res = await api.post("api/users/reset-password", data)
     return res.data;      
 }

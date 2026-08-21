@@ -1,84 +1,33 @@
 import ListingCard from '../../../components/ui/ListingCard';
-
-const featuredData = [
-  {
-    id: 1,
-    title: 'The Cyber Suite Loft',
-    location: 'Downtown Metropolis',
-    price: 150,
-    unit: 'day',
-    type: 'Room',
-    category: 'Rooms & Apartments',
-    imageSrc: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=800&h=500' // Working bright apartment
-  },
-  {
-    id: 2,
-    title: 'Whispering Pines Retreat',
-    location: 'Northwood Valley',
-    price: 280,
-    unit: 'day',
-    type: 'Cabin',
-    category: 'Rooms & Apartments',
-    imageSrc: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&q=80&w=800&h=500' // Cabin
-  },
-  {
-    id: 3,
-    title: 'Nexus Open Desk',
-    location: 'Tech District',
-    price: 35,
-    unit: 'day',
-    type: 'Coworking',
-    category: 'Coworking',
-    imageSrc: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800&h=500' // Coworking office
-  },
-  {
-    id: 4,
-    title: 'Lumina Studio Space',
-    location: 'Arts Quarter',
-    price: 75,
-    unit: 'hour',
-    type: 'Studio',
-    category: 'Rooms & Apartments',
-    imageSrc: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&q=80&w=800&h=500' // Photo studio
-  },
-  {
-    id: 5,
-    title: 'Urban Conference Room',
-    location: 'Business Center',
-    price: 50,
-    unit: 'hour',
-    type: 'Room',
-    category: 'Meeting Rooms',
-    imageSrc: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=800&h=500'
-  },
-  {
-    id: 6,
-    title: 'Luxury SUV Rental',
-    location: 'Airport Pickup',
-    price: 120,
-    unit: 'day',
-    type: 'Vehicle',
-    category: 'Cars & Vehicles',
-    imageSrc: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&q=80&w=800&h=500'
-  },
-  {
-    id: 7,
-    title: 'Professional Camera Gear',
-    location: 'Downtown Pickup',
-    price: 85,
-    unit: 'day',
-    type: 'Equipment',
-    category: 'Equipment',
-    imageSrc: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=800&h=500'
-  }
-];
+import { Link } from 'react-router-dom';
+import { useListings } from '../../../hooks/useListing';
 
 interface FeaturedListingsProps {
   activeCategory: string;
 }
 
 const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
-  const filteredListings = featuredData.filter(listing => listing.category === activeCategory);
+  const { data: listings, isLoading, isError } = useListings();
+
+  // Handle nested data structures gracefully
+  const listingsArray = Array.isArray(listings?.data) ? listings.data : (Array.isArray(listings) ? listings : []);
+  const filteredListings = listingsArray.filter((listing: any) => listing.type === activeCategory || listing.category === activeCategory);
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin h-12 w-12 border-4 border-blue border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px] flex flex-col items-center justify-center">
+        <p className="text-red-500 font-medium">Failed to load listings.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px]">
@@ -89,17 +38,30 @@ const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
       {filteredListings.length > 0 ? (
         <div className="flex flex-col">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredListings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                title={listing.title}
-                location={listing.location}
-                price={listing.price}
-                unit={listing.unit}
-                type={listing.type}
-                imageSrc={listing.imageSrc}
-              />
-            ))}
+            {filteredListings.map((listing: any) => {
+              // Extract first image if it's an array, or use directly if it's a string, else fallback
+              let imageSrc = "https://placehold.co/600x400/eeeeee/1E293B?text=No+Image";
+              if (listing.images && Array.isArray(listing.images) && listing.images.length > 0) {
+                imageSrc = listing.images[0];
+              } else if (typeof listing.images === 'string') {
+                imageSrc = listing.images;
+              }
+
+              return (
+                <Link to={`/listing/${listing.id}`} key={listing.id} className="block group">
+                  <div className="h-full transition-transform duration-300 group-hover:-translate-y-1">
+                    <ListingCard
+                      title={listing.title}
+                      location={listing.location}
+                      price={listing.price}
+                      unit={listing.unit || 'booking'}
+                      type={listing.type}
+                      imageSrc={imageSrc}
+                    />
+                  </div>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Pagination UI */}

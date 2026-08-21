@@ -1,8 +1,26 @@
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { LogOut } from 'lucide-react';
 import { Logo } from '../ui/Logo';
+import { useCustomerDashboard } from '../../hooks/useCustomer';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data, isSuccess } = useCustomerDashboard();
+
+  const user = data?.data || data?.user || data;
+  const isAuthenticated = isSuccess && !!user;
+
+  const handleLogout = () => {
+    // Optionally call a backend logout endpoint here
+    Cookies.remove('accessToken');
+    Cookies.remove('refreshToken');
+    queryClient.invalidateQueries({ queryKey: ['customerDashboard'] });
+    navigate('/');
+  };
+
   return (
     <div className="w-full px-4 pt-6 pb-2 max-w-[1440px] mx-auto">
       <nav className="w-full flex items-center justify-between py-4 px-8 bg-white rounded-full border border-slate-200">
@@ -26,22 +44,51 @@ const Navbar = () => {
         <Link to="/how-it-works" className="hover:text-blue transition-colors">
           How it Works
         </Link>
-        <Link to="/list-space" className="hover:text-blue transition-colors">
+        <Link to="/provider-signup" className="hover:text-blue transition-colors">
           List your space
         </Link>
       </div>
 
       {/* Right Actions */}
       <div className="flex items-center gap-6">
-        <Link to="/login" className="text-sm font-semibold text-blue hover:text-slate-700 transition-colors">
-          Log In
-        </Link>
-        <Link 
-          to="/signup" 
-          className="bg-button-dark text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-button-dark-hover transition-colors"
-        >
-          Sign Up
-        </Link>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <img 
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                alt="Profile" 
+                className="w-10 h-10 rounded-full object-cover border border-slate-200"
+              />
+              <div className="hidden md:flex flex-col">
+                <span className="text-sm font-bold text-blue leading-tight">
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Demo User'}
+                </span>
+                <span className="text-xs text-slate-500 leading-tight">
+                  {user?.email || 'demo@example.com'}
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors border border-slate-200"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <Link to="/login" className="text-sm font-semibold text-blue hover:text-slate-700 transition-colors">
+              Log In
+            </Link>
+            <Link 
+              to="/signup" 
+              className="bg-button-dark text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-button-dark-hover transition-colors"
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
       </div>
       </nav>
     </div>

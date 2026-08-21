@@ -4,15 +4,15 @@ import AuthLayout from '../../components/layouts/AuthLayout'
 import LoginIllustration from '../../assets/auth/svg_login.svg'
 import AuthForm from '../../components/ui/AuthForm'
 import Input from '../../components/ui/Input'
-import { useLogin } from '../../hooks/useAuth'
+import { useProviderLogin } from '../../hooks/useAuth'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 
-const Login = () => {
+const ProviderLogin = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { mutateAsync: login, isPending } = useLogin()
+  const { mutateAsync: login, isPending } = useProviderLogin()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -43,7 +43,7 @@ const Login = () => {
     <AuthLayout illustration={LoginIllustration}>
       <AuthForm>
         <div>
-           <h2 className='font-semibold text-3xl mb-6'>Welcome Back.</h2>
+           <h2 className='font-semibold text-3xl mb-6'>Provider Login.</h2>
         </div>
         <div className="flex flex-col gap-6 w-full">
           <Input 
@@ -94,7 +94,7 @@ const Login = () => {
             <div className="mt-8">
               <p className="text-[15px] text-slate-500">
                 Don't have an account?{' '}
-                <Link to="/signup" className="text-blue hover:underline font-medium transition-colors">
+                <Link to="/provider-signup" className="text-blue hover:underline font-medium transition-colors">
                   Signup here
                 </Link>
               </p>
@@ -106,4 +106,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default ProviderLogin

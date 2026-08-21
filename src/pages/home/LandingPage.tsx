@@ -6,7 +6,7 @@ import CategoryTabs from './components/CategoryTabs';
 import FeaturedListings from './components/FeaturedListings';
 
 const LandingPage = () => {
-  const [activeCategory, setActiveCategory] = useState('Rooms & Apartments');
+  const [activeCategory, setActiveCategory] = useState('EVENT');
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
