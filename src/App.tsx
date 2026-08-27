@@ -14,6 +14,8 @@ import AdminLogin from './pages/admin/auth/AdminLogin'
 
 import LandingPage from './pages/home/LandingPage'
 import ListingDetailsPage from './pages/listing/ListingDetailsPage'
+import CategoriesPage from './pages/categories/CategoriesPage'
+import HowItWorksPage from './pages/how-it-works/HowItWorksPage'
 
 const App = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
         {/* Shared Auth Pages */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/provider-login" element={<ProviderLogin />} />

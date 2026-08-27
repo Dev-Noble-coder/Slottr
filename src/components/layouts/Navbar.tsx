@@ -1,13 +1,20 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { LogOut } from 'lucide-react';
 import { Logo } from '../ui/Logo';
 import { useCustomerDashboard } from '../../hooks/useCustomer';
 import { useQueryClient } from '@tanstack/react-query';
 
+const NAV_LINKS = [
+  { to: '/', label: 'Discover' },
+  { to: '/categories', label: 'Categories' },
+  { to: '/how-it-works', label: 'How it Works' },
+];
+
 const Navbar = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const location = useLocation();
   const { data, isSuccess } = useCustomerDashboard();
 
   const user = data?.data || data?.user || data;
@@ -34,16 +41,21 @@ const Navbar = () => {
 
       {/* Center Links */}
       <div className="hidden md:flex items-center gap-8 font-medium text-sm text-slate-600">
-        <Link to="/" className="text-blue relative">
-          Discover
-          <span className="absolute -bottom-1.5 left-0 w-full h-[2px] bg-accent"></span>
-        </Link>
-        <Link to="/categories" className="hover:text-blue transition-colors">
-          Categories
-        </Link>
-        <Link to="/how-it-works" className="hover:text-blue transition-colors">
-          How it Works
-        </Link>
+        {NAV_LINKS.map(({ to, label }) => {
+          const isActive = location.pathname === to;
+          return (
+            <Link
+              key={to}
+              to={to}
+              className={`relative transition-colors ${isActive ? 'text-blue' : 'hover:text-blue'}`}
+            >
+              {label}
+              {isActive && (
+                <span className="absolute -bottom-1.5 left-0 w-full h-0.5 bg-accent"></span>
+              )}
+            </Link>
+          );
+        })}
         <Link to="/provider-signup" className="hover:text-blue transition-colors">
           List your space
         </Link>

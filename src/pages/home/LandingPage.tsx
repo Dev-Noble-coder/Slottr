@@ -1,12 +1,16 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Navbar from '../../components/layouts/Navbar';
 import Footer from '../../components/layouts/Footer';
 import HeroSection from './components/HeroSection';
-import CategoryTabs from './components/CategoryTabs';
+import CategoryTabs, { LISTING_TYPES } from './components/CategoryTabs';
 import FeaturedListings from './components/FeaturedListings';
 
 const LandingPage = () => {
-  const [activeCategory, setActiveCategory] = useState('EVENT');
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
+  const initialCategory = categoryParam && LISTING_TYPES.includes(categoryParam) ? categoryParam : 'EVENT';
+  const [activeCategory, setActiveCategory] = useState(initialCategory);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
