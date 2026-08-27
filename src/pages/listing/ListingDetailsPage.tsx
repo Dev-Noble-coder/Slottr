@@ -15,6 +15,7 @@ const ListingDetailsPage = () => {
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [bookingDate, setBookingDate] = useState('');
   const { data: customerData, isSuccess } = useCustomerDashboard();
   const { mutateAsync: createBooking, isPending } = useCreateBooking();
   const { data: listingsData, isLoading, isError } = useListings();
@@ -53,13 +54,18 @@ const ListingDetailsPage = () => {
   }
 
   const handleBookClick = async () => {
+    if (!bookingDate) {
+      toast.error("Please select a date for your booking.");
+      return;
+    }
+
     const isAuthenticated = isSuccess && !!customerData; 
     
     if (!isAuthenticated) {
       setShowAuthModal(true);
     } else {
       try {
-        await createBooking({ listingId: listing.id });
+        await createBooking({ listingId: listing.id, date: bookingDate });
         setShowSuccessModal(true);
       } catch (error) {
         toast.error("Booking failed. Please try again.");
@@ -135,12 +141,19 @@ const ListingDetailsPage = () => {
                 </div>
                 
                 <div className="space-y-6 mb-8">
-                  {/* Mock Date Picker Area */}
-                  <div className="p-4 border border-slate-200 rounded-xl flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-slate-400" />
-                    <div className="flex flex-col">
-                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Dates</span>
-                      <span className="text-sm font-medium text-blue">Add dates for exact pricing</span>
+                  <div className="p-4 border border-slate-200 rounded-xl flex flex-col gap-2">
+                    <label htmlFor="booking-date" className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                      Select Date
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <Calendar className="w-5 h-5 text-slate-400" />
+                      <input 
+                        type="date" 
+                        id="booking-date"
+                        className="w-full outline-none text-sm font-medium text-blue bg-transparent"
+                        value={bookingDate}
+                        onChange={(e) => setBookingDate(e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>

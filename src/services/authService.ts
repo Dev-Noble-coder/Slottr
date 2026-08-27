@@ -20,7 +20,7 @@ export async function login(data: any){
 }
 
 export async function signup(data: any){
-    const res = await api.post("api/users/signup", data)   
+    const res = await api.post("api/user/signup", data)   
     return res.data;      
 }
 

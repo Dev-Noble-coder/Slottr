@@ -16,6 +16,7 @@ import LandingPage from './pages/home/LandingPage'
 import ListingDetailsPage from './pages/listing/ListingDetailsPage'
 import CategoriesPage from './pages/categories/CategoriesPage'
 import HowItWorksPage from './pages/how-it-works/HowItWorksPage'
+import Dashboard from './pages/provider/Dashboard'
 
 const App = () => {
   return (
@@ -38,6 +39,11 @@ const App = () => {
         {/* Admin Specific Pages */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/accept-invitation/activate" element={<AcceptInvitation />} />
+
+        {/* Provider Specific Pages */}
+        <Route path="/provider/dashboard" element={<Dashboard />} />
+        <Route path="/provider/listings" element={<Dashboard />} />
+        <Route path="/provider/settings" element={<Dashboard />} />
       </Routes>
     </Router>
     </>

@@ -6,8 +6,8 @@ type AuthFormProps = {
 
 const AuthForm = ({ children }: AuthFormProps) => {
     return (
-        <div className='w-full max-w-[468px] mx-auto my-40'>
-            <div className='relative '>
+        <div className='w-full max-w-[468px] mx-auto w-full'>
+            <div className='relative'>
                 <div className='mb-[10%] flex flex-col items-center'>
                     <svg width="100" height="80" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3.80438 43.4782C3.80438 21.5669 21.567 3.80432 43.4783 3.80432" stroke="var(--color-blue)" stroke-width="7.6087" />

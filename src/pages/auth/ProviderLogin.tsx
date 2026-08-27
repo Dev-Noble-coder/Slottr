@@ -32,7 +32,7 @@ const ProviderLogin = () => {
       } else {
         queryClient.invalidateQueries({ queryKey: ['customerDashboard'] })
         toast.success("Login Successful")
-        navigate('/')
+        navigate('/provider/dashboard')
       }
     } catch (err) {
       setError('invalid email or password')

@@ -7,7 +7,15 @@ import Input from '../../components/ui/Input'
 import { toast } from 'sonner'
 import { useProviderSignup } from '../../hooks/useAuth'
 import { useQueryClient } from '@tanstack/react-query'
-import { LISTING_TYPES } from '../home/components/CategoryTabs'
+
+const PROVIDER_CATEGORIES = [
+  "ITEMS",
+  "VENUE",
+  "RIDES",
+  "PROPERTY",
+  "SERVICE",
+  "OTHERS"
+];
 
 const ProviderSignup = () => {
   const [step, setStep] = useState(1)
@@ -232,7 +240,7 @@ const ProviderSignup = () => {
               <div className="flex flex-col mb-4">
                   <label className="text-[#A1A1AA] text-[15px] mb-3">Service Categories</label>
                   <div className="flex flex-wrap gap-2">
-                      {LISTING_TYPES.map(cat => (
+                      {PROVIDER_CATEGORIES.map(cat => (
                           <button
                               key={cat}
                               onClick={(e) => { e.preventDefault(); toggleCategory(cat); }}
