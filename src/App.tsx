@@ -17,6 +17,9 @@ import ListingDetailsPage from './pages/listing/ListingDetailsPage'
 import CategoriesPage from './pages/categories/CategoriesPage'
 import HowItWorksPage from './pages/how-it-works/HowItWorksPage'
 import Dashboard from './pages/provider/Dashboard'
+import Listings from './pages/provider/Listings'
+import Settings from './pages/provider/Settings'
+import Bookings from './pages/provider/Bookings'
 
 const App = () => {
   return (
@@ -42,8 +45,9 @@ const App = () => {
 
         {/* Provider Specific Pages */}
         <Route path="/provider/dashboard" element={<Dashboard />} />
-        <Route path="/provider/listings" element={<Dashboard />} />
-        <Route path="/provider/settings" element={<Dashboard />} />
+        <Route path="/provider/listings" element={<Listings />} />
+        <Route path="/provider/settings" element={<Settings />} />
+        <Route path="/provider/bookings" element={<Bookings />} />
       </Routes>
     </Router>
     </>

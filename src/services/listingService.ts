@@ -5,6 +5,11 @@ export async function getListings() {
     return res.data;
 }
 
+export async function getMyListings() {
+    const res = await api.get("api/listings/mine");
+    return res.data;
+}
+
 export async function createProviderListing(data: FormData) {
     const res = await api.post("api/listings/", data, {
         headers: {

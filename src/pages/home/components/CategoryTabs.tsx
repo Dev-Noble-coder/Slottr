@@ -6,13 +6,9 @@ interface CategoryTabsProps {
 export const LISTING_TYPES = [
     "EVENT",
     "ROOM",
-    "RIDE",
+    "VEHICLE",
     "ITEM",
     "SERVICE",
-    "ITEMS",
-    "VENUE",
-    "RIDES",
-    "PROPERTY",
     "OTHERS",
 ];
 

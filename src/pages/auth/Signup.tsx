@@ -7,6 +7,7 @@ import Input from '../../components/ui/Input'
 import { toast } from 'sonner'
 import { useSignup } from '../../hooks/useAuth'
 import { useQueryClient } from '@tanstack/react-query'
+import Cookies from 'js-cookie'
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('')
@@ -41,7 +42,7 @@ const Signup = () => {
     }
 
     try {
-      await signup({
+      const response = await signup({
         firstName,
         lastName,
         email,
@@ -50,9 +51,15 @@ const Signup = () => {
         role: "CUSTOMER"
       })
 
+      // Assuming the response includes the access token directly or in data.accessToken
+      const token = response?.accessToken || response?.data?.accessToken;
+      if (token) {
+          Cookies.set('accessToken', token);
+      }
+
       queryClient.invalidateQueries({ queryKey: ['customerDashboard'] })
       toast.success("Signup Successful")
-      navigate('/login')
+      navigate('/') // Navigate to where they need to be
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Signup failed. Please try again.')
     }

@@ -4,7 +4,7 @@ import AuthLayout from '../../components/layouts/AuthLayout'
 import LoginIllustration from '../../assets/auth/svg_login.svg'
 import AuthForm from '../../components/ui/AuthForm'
 import Input from '../../components/ui/Input'
-import { useProviderLogin } from '../../hooks/useAuth'
+import { useProviderLogin } from '../../hooks/useAuth.ts'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 

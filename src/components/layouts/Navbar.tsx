@@ -4,6 +4,7 @@ import { LogOut } from 'lucide-react';
 import { Logo } from '../ui/Logo';
 import { useCustomerDashboard } from '../../hooks/useCustomer';
 import { useQueryClient } from '@tanstack/react-query';
+import { logout as logoutApi } from '../../services/authService';
 
 const NAV_LINKS = [
   { to: '/', label: 'Discover' },
@@ -20,8 +21,13 @@ const Navbar = () => {
   const user = data?.data || data?.user || data;
   const isAuthenticated = isSuccess && !!user;
 
-  const handleLogout = () => {
-    // Optionally call a backend logout endpoint here
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint
+      await logoutApi();
+    } catch (e) {
+      console.error("Logout failed", e);
+    }
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
     queryClient.invalidateQueries({ queryKey: ['customerDashboard'] });

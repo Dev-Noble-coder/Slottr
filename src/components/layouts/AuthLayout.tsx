@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 type AuthLayoutProps = {
     illustration: string;
@@ -15,7 +17,14 @@ const AuthLayout = ({ illustration, children }: AuthLayoutProps) => {
             </div>
             
             <div className='flex-1 flex flex-col bg-white lg:rounded-bl-[100px] relative z-10 overflow-y-auto'>
-                <div className='w-full min-h-full flex flex-col justify-center p-6 sm:p-8 lg:p-12'>
+                <Link 
+                    to="/" 
+                    className="absolute top-6 left-6 sm:top-8 sm:left-8 text-slate-500 hover:text-slate-900 transition-colors flex items-center gap-2 font-medium z-20"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="hidden sm:inline">Home</span>
+                </Link>
+                <div className='w-full min-h-full flex flex-col justify-center p-6 sm:p-8 lg:p-12 pt-20 sm:pt-20'>
                     {children}
                 </div>
             </div>

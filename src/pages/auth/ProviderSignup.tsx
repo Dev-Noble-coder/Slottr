@@ -5,8 +5,9 @@ import LoginIllustration from '../../assets/auth/svg_login.svg'
 import AuthForm from '../../components/ui/AuthForm'
 import Input from '../../components/ui/Input'
 import { toast } from 'sonner'
-import { useProviderSignup } from '../../hooks/useAuth'
+import { useProviderSignup } from '../../hooks/useAuth.ts'
 import { useQueryClient } from '@tanstack/react-query'
+import Cookies from 'js-cookie'
 
 const PROVIDER_CATEGORIES = [
   "ITEMS",
@@ -84,7 +85,7 @@ const ProviderSignup = () => {
     }
 
     try {
-      await signup({
+      const response = await signup({
         fullName,
         username,
         email,
@@ -96,9 +97,14 @@ const ProviderSignup = () => {
         serviceRadius: Number(serviceRadius)
       })
 
+      const token = response?.accessToken || response?.data?.accessToken;
+      if (token) {
+          Cookies.set('accessToken', token);
+      }
+
       queryClient.invalidateQueries({ queryKey: ['customerDashboard'] })
       toast.success("Signup Successful")
-      navigate('/provider-login')
+      navigate('/provider/dashboard')
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Signup failed. Please try again.')
     }
