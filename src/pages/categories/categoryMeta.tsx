@@ -1,4 +1,4 @@
-import { CalendarDays, DoorOpen, Car, Package, Wrench, Boxes, Building2, Bus, Home, Grid3x3 } from 'lucide-react';
+import { CalendarDays, DoorOpen, Car, Package, Wrench, Grid3x3 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export interface CategoryMeta {

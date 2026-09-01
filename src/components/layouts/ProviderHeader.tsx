@@ -1,5 +1,5 @@
 import { Menu, Search, Bell } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+
 
 interface ProviderHeaderProps {
     setMobileOpen: (open: boolean) => void;
