@@ -15,6 +15,7 @@ const PROVIDER_CATEGORIES = [
   "RIDES",
   "PROPERTY",
   "SERVICE",
+  "EVENT",
   "OTHERS"
 ];
 

@@ -47,14 +47,22 @@ const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
                 imageSrc = listing.images;
               }
 
+              const locationText = [listing.streetAddress, listing.state, listing.country].filter(Boolean).join(', ') 
+                || listing.location 
+                || 'Location not specified';
+
+              const pricingUnitText = listing.pricingUnit 
+                ? listing.pricingUnit.toLowerCase() 
+                : (listing.unit || 'slot');
+
               return (
                 <Link to={`/listing/${listing.id}`} key={listing.id} className="block group">
                   <div className="h-full transition-transform duration-300 group-hover:-translate-y-1">
                     <ListingCard
                       title={listing.title}
-                      location={listing.location}
+                      location={locationText}
                       price={listing.price}
-                      unit={listing.unit || 'booking'}
+                      unit={pricingUnitText}
                       type={listing.type}
                       imageSrc={imageSrc}
                     />

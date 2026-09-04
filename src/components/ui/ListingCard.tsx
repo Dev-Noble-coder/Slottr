@@ -1,21 +1,24 @@
-import { MapPin, Home, Warehouse, Monitor, Camera } from 'lucide-react';
+import { MapPin, Calendar, Package, Warehouse, Car, Building, Wrench, Sparkles, Tag } from 'lucide-react';
 
 interface ListingCardProps {
   imageSrc: string;
-  type: 'Room' | 'Cabin' | 'Coworking' | 'Studio' | string;
+  type: string;
   title: string;
   location: string;
-  price: number;
+  price: number | string;
   unit: string;
 }
 
 const getTypeIcon = (type: string) => {
+  if (!type) return <Tag className="w-3 h-3 mr-1.5" />;
   switch (type.toLowerCase()) {
-    case 'room': return <Home className="w-3 h-3 mr-1.5" />;
-    case 'cabin': return <Warehouse className="w-3 h-3 mr-1.5" />;
-    case 'coworking': return <Monitor className="w-3 h-3 mr-1.5" />;
-    case 'studio': return <Camera className="w-3 h-3 mr-1.5" />;
-    default: return <Home className="w-3 h-3 mr-1.5" />;
+    case 'event': return <Calendar className="w-3 h-3 mr-1.5" />;
+    case 'items': return <Package className="w-3 h-3 mr-1.5" />;
+    case 'rides': return <Car className="w-3 h-3 mr-1.5" />;
+    case 'venue': return <Warehouse className="w-3 h-3 mr-1.5" />;
+    case 'property': return <Building className="w-3 h-3 mr-1.5" />;
+    case 'service': return <Wrench className="w-3 h-3 mr-1.5" />;
+    default: return <Sparkles className="w-3 h-3 mr-1.5" />;
   }
 };
 

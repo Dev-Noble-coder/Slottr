@@ -24,8 +24,9 @@ export const useLogin = () => {
     return useMutation({
         mutationFn: login,
         onSuccess: (res) => {
-            if (res?.token) {
-                Cookies.set('accessToken', res.token);
+            const token = res?.token || res?.accessToken || res?.data?.accessToken || res?.data?.token;
+            if (token) {
+                Cookies.set('accessToken', token);
             }
             if (res?.user) {
                 Cookies.set('user', JSON.stringify(res.user));
@@ -44,11 +45,12 @@ export const useProviderLogin = () => {
     return useMutation({
         mutationFn: providerLogin,
         onSuccess: (res) => {
-            if (res?.token) {
-                Cookies.set('accessToken', res.token);
+            const token = res?.token || res?.accessToken || res?.data?.accessToken || res?.data?.token;
+            if (token) {
+                Cookies.set('accessToken', token);
             }
-            if (res?.user) {
-                Cookies.set('user', JSON.stringify(res.user));
+            if (res?.user || res?.provider) {
+                Cookies.set('user', JSON.stringify(res.user || res.provider));
             }
         }
     });
@@ -57,6 +59,15 @@ export const useProviderLogin = () => {
 export const useProviderSignup = () => {
     return useMutation({
         mutationFn: providerSignup,
+        onSuccess: (res) => {
+            const token = res?.token || res?.accessToken || res?.data?.accessToken || res?.data?.token;
+            if (token) {
+                Cookies.set('accessToken', token);
+            }
+            if (res?.user || res?.provider) {
+                Cookies.set('user', JSON.stringify(res.user || res.provider));
+            }
+        }
     });
 };
 

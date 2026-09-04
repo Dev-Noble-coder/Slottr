@@ -1,6 +1,4 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-
 import { Toaster } from 'sonner'
 
 import Login from './pages/auth/Login'
@@ -18,6 +16,7 @@ import CategoriesPage from './pages/categories/CategoriesPage'
 import HowItWorksPage from './pages/how-it-works/HowItWorksPage'
 import Dashboard from './pages/provider/Dashboard'
 import Listings from './pages/provider/Listings'
+import Profile from './pages/provider/Profile'
 import Settings from './pages/provider/Settings'
 import Bookings from './pages/provider/Bookings'
 
@@ -46,6 +45,7 @@ const App = () => {
         {/* Provider Specific Pages */}
         <Route path="/provider/dashboard" element={<Dashboard />} />
         <Route path="/provider/listings" element={<Listings />} />
+        <Route path="/provider/profile" element={<Profile />} />
         <Route path="/provider/settings" element={<Settings />} />
         <Route path="/provider/bookings" element={<Bookings />} />
       </Routes>

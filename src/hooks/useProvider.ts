@@ -15,6 +15,7 @@ export const useRespondToBooking = () => {
         mutationFn: respondToBooking,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['providerBookings'] });
+            queryClient.invalidateQueries({ queryKey: ['providerHome'] });
         }
     });
 };
@@ -25,6 +26,7 @@ export const useCompleteBooking = () => {
         mutationFn: completeBooking,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['providerBookings'] });
+            queryClient.invalidateQueries({ queryKey: ['providerHome'] });
         }
     });
 };
@@ -37,7 +39,11 @@ export const useProviderHome = () => {
 };
 
 export const useUploadAvatar = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: uploadProviderAvatar,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['providerHome'] });
+        }
     });
 };
