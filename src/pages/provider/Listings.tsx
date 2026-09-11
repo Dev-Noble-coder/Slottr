@@ -30,10 +30,10 @@ import type { ListingType, PricingUnit } from '../../types/listing';
 const LISTING_TYPES: ListingType[] = [
     "ITEMS",
     "VENUE",
+    "EVENT",
     "RIDES",
     "PROPERTY",
     "SERVICE",
-    "EVENT",
     "OTHERS",
 ];
 
@@ -110,7 +110,7 @@ const Listings = () => {
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            const filesArray = Array.from(e.target.files).slice(0, 5);
+            const filesArray = Array.from(e.target.files).slice(0, 6);
             setImageFiles(filesArray);
         }
     };
@@ -184,7 +184,7 @@ const Listings = () => {
 
     const handleEditFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
-            const filesArray = Array.from(e.target.files).slice(0, 5);
+            const filesArray = Array.from(e.target.files).slice(0, 6);
             setEditImageFiles(filesArray);
         }
     };

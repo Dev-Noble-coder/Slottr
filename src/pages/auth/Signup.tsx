@@ -49,19 +49,30 @@ const Signup = () => {
         password,
         phone,
         role: "CUSTOMER"
-      })
+      });
 
-      // Assuming the response includes the access token directly or in data.accessToken
-      const token = response?.accessToken || response?.data?.accessToken;
+      const token = response?.token || response?.accessToken || response?.data?.accessToken || response?.data?.token;
+      const user = response?.user || response?.data?.user || (response?.data && typeof response?.data === 'object' ? response.data : null) || {
+        firstName,
+        lastName,
+        email,
+        phone,
+        role: "CUSTOMER"
+      };
+
       if (token) {
-          Cookies.set('accessToken', token);
+        Cookies.set('accessToken', token);
+        Cookies.set('user', JSON.stringify(user));
+        await queryClient.invalidateQueries({ queryKey: ['customerDashboard'] });
+        toast.success("Signup Successful");
+        navigate('/');
+      } else {
+        // If the backend requires explicit login after signup
+        toast.success("Account created successfully! Please log in.");
+        navigate('/login');
       }
-
-      queryClient.invalidateQueries({ queryKey: ['customerDashboard'] })
-      toast.success("Signup Successful")
-      navigate('/') // Navigate to where they need to be
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Signup failed. Please try again.')
+      setError(err?.response?.data?.message || 'Signup failed. Please try again.');
     }
   }
 

@@ -18,8 +18,18 @@ const Navbar = () => {
   const location = useLocation();
   const { data, isSuccess } = useCustomerDashboard();
 
-  const user = data?.data || data?.user || data;
-  const isAuthenticated = isSuccess && !!user;
+  const cookieUser = (() => {
+    try {
+      const raw = Cookies.get('user');
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const user = data?.data || data?.user || data || cookieUser;
+  const hasToken = !!Cookies.get('accessToken');
+  const isAuthenticated = Boolean((isSuccess && user) || (hasToken && (user || cookieUser)) || hasToken);
 
   const handleLogout = async () => {
     try {
@@ -30,6 +40,7 @@ const Navbar = () => {
     }
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
+    Cookies.remove('user');
     queryClient.invalidateQueries({ queryKey: ['customerDashboard'] });
     navigate('/');
   };

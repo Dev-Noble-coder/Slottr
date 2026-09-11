@@ -17,11 +17,9 @@ export async function getMyListings() {
     return res.data;
 }
 
-// Create Listing (Handles both Event style at /api/listings/ and Availability engine listings at /api/listings/create)
+// Create Listing (POST /api/listings/create as form-data)
 export async function createProviderListing(data: FormData) {
-    const type = data.get('type');
-    const endpoint = type === 'EVENT' ? "api/listings/" : "api/listings/create";
-    const res = await api.post(endpoint, data, {
+    const res = await api.post("api/listings/create", data, {
         headers: {
             "Content-Type": "multipart/form-data"
         }

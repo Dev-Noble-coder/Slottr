@@ -8,8 +8,8 @@ import FeaturedListings from './components/FeaturedListings';
 
 const LandingPage = () => {
   const [searchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category');
-  const initialCategory = categoryParam && LISTING_TYPES.includes(categoryParam) ? categoryParam : 'EVENT';
+  const categoryParam = searchParams.get('category')?.toUpperCase();
+  const initialCategory = categoryParam && LISTING_TYPES.includes(categoryParam) ? categoryParam : LISTING_TYPES[0];
   const [activeCategory, setActiveCategory] = useState(initialCategory);
 
   return (

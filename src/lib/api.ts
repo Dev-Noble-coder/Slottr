@@ -53,10 +53,16 @@ api.interceptors.response.use(
                 // Refresh failed (e.g., refresh token expired)
                 Cookies.remove('accessToken');
                 
-                // Only redirect if not already on an auth page, and not on the home page
+                // Only redirect to login for protected routes that require authentication
                 const path = window.location.pathname;
-                if (!path.includes('/login') && !path.includes('/signup') && path !== '/') {
-                    window.location.href = '/login';
+                const isProtectedRoute = path.startsWith('/provider') || path.startsWith('/admin') || path.startsWith('/user');
+                const isAuthPage = path.includes('/login') || path.includes('/signup') || path.includes('/forgot-password') || path.includes('/reset-password') || path.includes('/accept-invitation');
+
+                if (isProtectedRoute && !isAuthPage) {
+                    const loginPath = path.startsWith('/provider') 
+                        ? '/provider-login' 
+                        : (path.startsWith('/admin') ? '/admin/login' : '/login');
+                    window.location.href = loginPath;
                 }
                 return Promise.reject(refreshError);
             }

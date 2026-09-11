@@ -2,7 +2,7 @@ import api from "../lib/api";
 import type { ProviderHomeResponse } from "../types/provider";
 
 export async function getProviderHome(): Promise<ProviderHomeResponse> {
-    const res = await api.get<ProviderHomeResponse>("api/provider/me");
+    const res = await api.get<ProviderHomeResponse>("api/provider/home");
     return res.data;
 }
 

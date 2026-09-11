@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProviderBookings, respondToBooking, completeBooking } from '../services/providerBookingService';
 import { getProviderHome, uploadProviderAvatar } from '../services/providerService';
 
-export const useProviderBookings = () => {
+export const useProviderBookings = (status?: string) => {
     return useQuery({
-        queryKey: ['providerBookings'],
-        queryFn: getProviderBookings,
+        queryKey: ['providerBookings', status],
+        queryFn: () => getProviderBookings(status),
     });
 };
 

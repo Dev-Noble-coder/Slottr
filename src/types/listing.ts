@@ -1,8 +1,21 @@
-export type ListingType = 'EVENT' | 'ITEMS' | 'VENUE' | 'RIDES' | 'PROPERTY' | 'SERVICE' | 'OTHERS';
+export type ListingType = 'ITEMS' | 'VENUE' | 'RIDES' | 'PROPERTY' | 'SERVICE' | 'OTHERS' | 'EVENT';
 
 export type PricingUnit = 'HOUR' | 'DAY' | 'WEEK' | 'MONTH';
 
 export type ListingStatus = 'draft' | 'published' | 'paused' | 'DRAFT' | 'PUBLISHED' | 'PAUSED';
+
+export interface CreateBookingPayload {
+    listingId: string | number;
+    attendeeFirstName: string;
+    attendeeLastName: string;
+    attendeeEmail: string;
+    attendeeCountry: string; // ISO-2 code, e.g. "NG", "US"
+    attendeePhone: string;
+    bookingDate?: string;     // ISO datetime string
+    durationHours?: number;  // numeric hours
+    date?: string;           // legacy single-date fallback if needed
+}
+
 
 export interface TimeSlot {
     start: string; // e.g. "09:00"

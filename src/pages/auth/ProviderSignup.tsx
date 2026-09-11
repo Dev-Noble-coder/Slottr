@@ -98,16 +98,30 @@ const ProviderSignup = () => {
         serviceRadius: Number(serviceRadius)
       })
 
-      const token = response?.accessToken || response?.data?.accessToken;
-      if (token) {
-          Cookies.set('accessToken', token);
-      }
+      const token = response?.token || response?.accessToken || response?.data?.accessToken || response?.data?.token;
+      const user = response?.user || response?.provider || response?.data?.user || response?.data?.provider || (response?.data && typeof response?.data === 'object' ? response.data : null) || {
+        fullName,
+        username,
+        email,
+        phone,
+        city,
+        state,
+        role: "PROVIDER"
+      };
 
-      queryClient.invalidateQueries({ queryKey: ['customerDashboard'] })
-      toast.success("Signup Successful")
-      navigate('/provider/dashboard')
+      if (token) {
+        Cookies.set('accessToken', token);
+        Cookies.set('user', JSON.stringify(user));
+        await queryClient.invalidateQueries({ queryKey: ['providerHome'] });
+        await queryClient.invalidateQueries({ queryKey: ['providerBookings'] });
+        toast.success("Signup Successful");
+        navigate('/provider/dashboard');
+      } else {
+        toast.success("Provider account created! Please log in.");
+        navigate('/provider/login');
+      }
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Signup failed. Please try again.')
+      setError(err?.response?.data?.message || 'Signup failed. Please try again.');
     }
   }
 

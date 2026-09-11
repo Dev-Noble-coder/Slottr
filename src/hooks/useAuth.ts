@@ -38,6 +38,16 @@ export const useLogin = () => {
 export const useSignup = () => {
     return useMutation({
         mutationFn: signup,
+        onSuccess: (res) => {
+            const token = res?.token || res?.accessToken || res?.data?.accessToken || res?.data?.token;
+            if (token) {
+                Cookies.set('accessToken', token);
+            }
+            const user = res?.user || res?.data?.user || (res?.data && typeof res?.data === 'object' ? res.data : null);
+            if (user) {
+                Cookies.set('user', JSON.stringify(user));
+            }
+        }
     });
 };
 
