@@ -20,7 +20,9 @@ import {
     Pause, 
     X,
     Upload,
-    Edit3
+    Edit3,
+    ChevronLeft,
+    ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import Input from '../../components/ui/Input';
@@ -44,8 +46,14 @@ const PRICING_UNITS: PricingUnit[] = [
     "MONTH"
 ];
 
+const ITEMS_PER_PAGE = 9;
+
 const Listings = () => {
-    const { data: listingsData, isLoading: isListingsLoading } = useMyListings();
+    const [currentPage, setCurrentPage] = useState(1);
+    const { data: listingsData, isLoading: isListingsLoading } = useMyListings({
+        page: currentPage,
+        limit: ITEMS_PER_PAGE
+    });
     const { mutateAsync: createListing, isPending: isCreating } = useCreateProviderListing();
     const { mutateAsync: updateListing, isPending: isUpdating } = useUpdateProviderListing();
     const { mutateAsync: publishListing, isPending: isPublishing } = usePublishProviderListing();
@@ -90,7 +98,17 @@ const Listings = () => {
     const [editImageFiles, setEditImageFiles] = useState<File[]>([]);
     const editFileInputRef = useRef<HTMLInputElement>(null);
 
-    const listings = Array.isArray(listingsData?.data) ? listingsData.data : (Array.isArray(listingsData) ? listingsData : []);
+    const rawListings = Array.isArray(listingsData?.data) ? listingsData.data : (Array.isArray(listingsData) ? listingsData : []);
+    const backendPagination = listingsData?.pagination;
+    const isServerPaginated = Boolean(backendPagination && backendPagination.totalPages !== undefined);
+
+    const totalPages = isServerPaginated 
+        ? Math.max(Number(backendPagination?.totalPages) || 1, 1)
+        : Math.ceil(rawListings.length / ITEMS_PER_PAGE) || 1;
+
+    const listings = isServerPaginated 
+        ? rawListings 
+        : rawListings.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     const resetForm = () => {
         setTitle('');
@@ -306,7 +324,7 @@ const Listings = () => {
                 </div>
                 <button 
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="bg-blue text-white px-4 py-2 rounded-md font-medium text-sm flex items-center gap-2 hover:bg-button-dark transition-colors self-start sm:self-auto"
+                    className="bg-blue hover:bg-button-dark text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 transition-all shadow-xs self-start sm:self-auto cursor-pointer"
                 >
                     <Plus className="w-4 h-4" />
                     <span>Create Listing</span>
@@ -318,7 +336,8 @@ const Listings = () => {
                     <Loader2 className="w-8 h-8 animate-spin text-accent" />
                 </div>
             ) : listings.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div className="flex flex-col">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {listings.map((listing: any) => {
                         const status = (listing.status || 'draft').toLowerCase();
                         const isPublished = status === 'published';
@@ -327,46 +346,46 @@ const Listings = () => {
                         const isActing = actionListingId === listing.id;
 
                         return (
-                            <div key={listing.id} className="bg-white rounded-md border border-slate-200 overflow-hidden flex flex-col justify-between">
+                            <div key={listing.id} className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs flex flex-col justify-between transition-all duration-200 hover:border-slate-300">
                                 <div>
                                     {/* Image Container */}
-                                    <div className="h-44 bg-slate-100 relative border-b border-slate-200">
+                                    <div className="h-48 bg-slate-100 relative overflow-hidden">
                                         {listing.images && listing.images.length > 0 ? (
                                             <img src={listing.images[0]} alt={listing.title} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                <ImageIcon className="w-8 h-8 opacity-40" />
+                                            <div className="w-full h-full flex items-center justify-center text-slate-400 bg-slate-100">
+                                                <ImageIcon className="w-10 h-10 opacity-30" />
                                             </div>
                                         )}
 
                                         {/* Status Badge */}
-                                        <div className="absolute top-2.5 right-2.5">
+                                        <div className="absolute top-3 right-3">
                                             {isDraft && (
-                                                <span className="bg-amber-100/90 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-sm text-[11px] font-bold uppercase tracking-wider">
+                                                <span className="bg-amber-500/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-xs">
                                                     Draft
                                                 </span>
                                             )}
                                             {isPublished && (
-                                                <span className="bg-emerald-100/90 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-sm text-[11px] font-bold uppercase tracking-wider">
+                                                <span className="bg-emerald-600/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-xs">
                                                     Published
                                                 </span>
                                             )}
                                             {isPaused && (
-                                                <span className="bg-slate-200/90 text-slate-700 border border-slate-300 px-2 py-0.5 rounded-sm text-[11px] font-bold uppercase tracking-wider">
+                                                <span className="bg-slate-800/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-xs">
                                                     Paused
                                                 </span>
                                             )}
                                         </div>
 
                                         {/* Type / Category Tag */}
-                                        <div className="absolute top-2.5 left-2.5 bg-slate-900/80 text-white px-2 py-0.5 rounded-sm text-[11px] font-medium tracking-wide">
+                                        <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase shadow-xs">
                                             {listing.type || listing.category || 'ITEM'}
                                         </div>
                                     </div>
 
                                     {/* Body */}
-                                    <div className="p-4">
-                                        <div className="flex items-start justify-between gap-2 mb-1.5">
+                                    <div className="p-5">
+                                        <div className="flex items-start justify-between gap-2 mb-1">
                                             <h3 className="font-bold text-base text-slate-900 truncate" title={listing.title}>
                                                 {listing.title}
                                             </h3>
@@ -376,44 +395,46 @@ const Listings = () => {
                                             {listing.description || 'No description provided.'}
                                         </p>
 
-                                        <div className="flex items-center text-slate-500 text-xs mb-3">
-                                            <MapPin className="w-3.5 h-3.5 mr-1 shrink-0 text-slate-400" />
+                                        <div className="flex items-center text-slate-500 text-xs mb-4">
+                                            <MapPin className="w-3.5 h-3.5 mr-1.5 shrink-0 text-slate-400" />
                                             <span className="truncate">
                                                 {[listing.streetAddress, listing.state, listing.country].filter(Boolean).join(', ') || listing.location || 'Location not specified'}
                                             </span>
                                         </div>
 
-                                        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
-                                            <span className="font-bold text-sm text-slate-900">
-                                                ${listing.price} <span className="text-slate-400 font-normal text-xs">/ {listing.pricingUnit || 'slot'}</span>
+                                        <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100">
+                                            <span className="font-black text-base text-slate-900">
+                                                ${listing.price} <span className="text-slate-400 font-normal text-xs">/ {listing.pricingUnit ? listing.pricingUnit.toLowerCase() : 'slot'}</span>
                                             </span>
                                             {listing.capacity && (
-                                                <span className="text-slate-500">Cap: {listing.capacity}</span>
+                                                <span className="px-2.5 py-0.5 bg-slate-100 text-slate-700 font-semibold rounded-full text-[11px]">
+                                                    Cap: {listing.capacity}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Actions Bar */}
-                                <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+                                <div className="p-3.5 bg-slate-50/90 border-t border-slate-100 flex items-center justify-between gap-2">
                                     <button
                                         onClick={() => setSelectedListingForAvailability(listing)}
-                                        className="text-xs font-semibold text-slate-700 hover:text-blue bg-white border border-slate-200 hover:border-slate-300 px-2.5 py-1 rounded-sm transition-colors flex items-center gap-1.5"
+                                        className="text-xs font-bold text-slate-700 hover:text-blue bg-white border border-slate-200 hover:border-blue px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
                                         title="Configure Availability Schedule"
                                     >
                                         <Clock className="w-3.5 h-3.5 text-accent" />
                                         Availability
                                     </button>
 
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-2">
                                         {/* Publish / Pause action */}
                                         {(isDraft || isPaused) && (
                                             <button
                                                 onClick={() => handlePublish(listing.id)}
                                                 disabled={isActing && isPublishing}
-                                                className="text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-sm transition-colors flex items-center gap-1 disabled:opacity-50"
+                                                className="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-full transition-colors flex items-center gap-1.5 disabled:opacity-50 shadow-2xs cursor-pointer"
                                             >
-                                                {isActing && isPublishing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                                                {isActing && isPublishing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
                                                 Publish
                                             </button>
                                         )}
@@ -422,16 +443,16 @@ const Listings = () => {
                                             <button
                                                 onClick={() => handlePause(listing.id)}
                                                 disabled={isActing && isPausing}
-                                                className="text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-sm transition-colors flex items-center gap-1 disabled:opacity-50"
+                                                className="text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-full transition-colors flex items-center gap-1.5 disabled:opacity-50 shadow-2xs cursor-pointer"
                                             >
-                                                {isActing && isPausing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Pause className="w-3 h-3" />}
+                                                {isActing && isPausing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Pause className="w-3.5 h-3.5" />}
                                                 Pause
                                             </button>
                                         )}
 
                                         <button
                                             onClick={() => handleOpenEditModal(listing)}
-                                            className="text-slate-400 hover:text-blue p-1 rounded transition-colors"
+                                            className="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-blue hover:border-blue flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
                                             title="Edit Listing Details"
                                         >
                                             <Edit3 className="w-3.5 h-3.5" />
@@ -439,7 +460,7 @@ const Listings = () => {
 
                                         <button
                                             onClick={() => handleDelete(listing.id)}
-                                            className="text-slate-400 hover:text-red-600 p-1 rounded transition-colors"
+                                            className="w-8 h-8 rounded-full bg-white border border-slate-200 text-slate-500 hover:text-rose-600 hover:border-rose-300 flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
                                             title="Delete Listing"
                                         >
                                             <Trash2 className="w-3.5 h-3.5" />
@@ -450,6 +471,34 @@ const Listings = () => {
                         );
                     })}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="mt-8 flex items-center justify-center gap-2">
+                        <button 
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border border-slate-200 bg-white rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 font-medium text-xs transition-all inline-flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-2xs"
+                        >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                            <span>Previous</span>
+                        </button>
+
+                        <span className="text-xs font-semibold text-slate-600 px-3 py-1 bg-white border border-slate-200 rounded-full">
+                            Page {currentPage} of {totalPages}
+                        </span>
+
+                        <button 
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border border-slate-200 bg-white rounded-full text-blue hover:bg-slate-100 disabled:opacity-40 font-medium text-xs transition-all inline-flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-2xs"
+                        >
+                            <span>Next</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                )}
+            </div>
             ) : (
                 <div className="bg-white rounded-md border border-slate-200 p-12 text-center">
                     <div className="w-12 h-12 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-center mx-auto mb-3">

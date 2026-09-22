@@ -75,8 +75,8 @@ const ProviderSignup = () => {
     e.preventDefault()
     setError('')
 
-    if (!phone || !city || !state || !serviceRadius) {
-      setError('Please fill in all fields')
+    if (!phone || !city || !state) {
+      setError('Please fill in all required fields')
       return
     }
 
@@ -95,8 +95,9 @@ const ProviderSignup = () => {
         categories,
         city,
         state,
-        serviceRadius: Number(serviceRadius)
+        serviceRadius: serviceRadius ? Number(serviceRadius) : undefined
       })
+
 
       const token = response?.token || response?.accessToken || response?.data?.accessToken || response?.data?.token;
       const user = response?.user || response?.provider || response?.data?.user || response?.data?.provider || (response?.data && typeof response?.data === 'object' ? response.data : null) || {
@@ -230,12 +231,11 @@ const ProviderSignup = () => {
                   error={error && !phone ? 'Phone is required' : ''}
                 />
                 <Input 
-                  label="Service Radius (km)" 
+                  label="Service Radius (km) (Optional)" 
                   type="number" 
                   placeholder="15" 
                   value={serviceRadius}
                   onChange={(e) => setServiceRadius(e.target.value)}
-                  error={error && !serviceRadius ? 'Radius is required' : ''}
                 />
               </div>
 
@@ -280,7 +280,7 @@ const ProviderSignup = () => {
                   )}
               </div>
 
-              {error && (!phone || !city || !state || !serviceRadius) && (
+              {error && (!phone || !city || !state) && (
                  <p className="text-red-500 text-sm">{error}</p>
               )}
 
@@ -293,9 +293,10 @@ const ProviderSignup = () => {
                 </button>
                 <button 
                   onClick={handleSignup}
-                  disabled={isPending || !phone || !city || !state || !serviceRadius || categories.length === 0}
+                  disabled={isPending || !phone || !city || !state || categories.length === 0}
                   className="bg-blue text-white px-8 py-3 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex-1"
                 >
+
                   {isPending ? (
                     <>
                       Signing up...

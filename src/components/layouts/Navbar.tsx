@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import { LogOut } from 'lucide-react';
+import { LogOut, Calendar, LayoutDashboard } from 'lucide-react';
 import { Logo } from '../ui/Logo';
 import { useCustomerDashboard } from '../../hooks/useCustomer';
 import { useQueryClient } from '@tanstack/react-query';
@@ -79,30 +79,49 @@ const Navbar = () => {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6">
         {isAuthenticated ? (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* View Bookings / Dashboard CTA Button */}
+            <Link
+              to={user?.role === 'PROVIDER' ? '/provider/bookings' : '/customer/bookings'}
+              className="bg-accent hover:bg-accent/90 text-white px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all inline-flex items-center gap-1.5 shadow-sm shadow-accent/20"
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{user?.role === 'PROVIDER' ? 'Manage Bookings' : 'My Bookings'}</span>
+            </Link>
+
+            {user?.role === 'PROVIDER' && (
+              <Link
+                to="/provider/dashboard"
+                className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-colors"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>Dashboard</span>
+              </Link>
+            )}
+
+            <div className="flex items-center gap-2.5">
               <img 
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
                 alt="Profile" 
-                className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                className="w-9 h-9 rounded-full object-cover border border-slate-200"
               />
-              <div className="hidden md:flex flex-col">
-                <span className="text-sm font-bold text-blue leading-tight">
-                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Demo User'}
+              <div className="hidden lg:flex flex-col">
+                <span className="text-xs font-bold text-blue leading-tight">
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : (user?.fullName || 'User')}
                 </span>
-                <span className="text-xs text-slate-500 leading-tight">
-                  {user?.email || 'demo@example.com'}
+                <span className="text-[11px] text-slate-500 leading-tight truncate max-w-[120px]">
+                  {user?.email || 'user@example.com'}
                 </span>
               </div>
             </div>
             <button 
               onClick={handleLogout}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors border border-slate-200"
+              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-red-600 transition-colors border border-slate-200 cursor-pointer"
               title="Logout"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (

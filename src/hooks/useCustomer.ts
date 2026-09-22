@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { getCustomerDashboard } from '../services/customerService';
+import { getCustomerDashboard, getCustomerBookings } from '../services/customerService';
 import Cookies from 'js-cookie';
 
 export const useCustomerDashboard = () => {
@@ -11,4 +11,15 @@ export const useCustomerDashboard = () => {
         retry: false,
     });
 };
+
+export const useCustomerBookings = (status?: string) => {
+    const token = Cookies.get('accessToken');
+    return useQuery({
+        queryKey: ['customerBookings', status],
+        queryFn: () => getCustomerBookings(status),
+        enabled: !!token,
+        retry: false,
+    });
+};
+
 

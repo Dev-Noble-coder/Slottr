@@ -7,9 +7,19 @@ export interface ProviderProfile {
     categories: string[];
     city: string;
     state: string;
-    serviceRadius: number;
+    serviceRadius?: number | null;
     email: string;
     role: string;
+}
+
+export interface ProviderProfileUpdatePayload {
+    fullName?: string;
+    phone?: string;
+    city?: string;
+    state?: string;
+    serviceRadius?: number | null;
+    categories?: string[];
+    username?: string;
 }
 
 export interface ProviderAnalyticsItem {
@@ -49,7 +59,7 @@ export interface ProviderBooking {
     id: string | number;
     listingId: string | number;
     customerId?: string | number | null;
-    status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED';
+    status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
     bookingDate: string;
     durationHours: number;
     amount: number;
@@ -58,6 +68,7 @@ export interface ProviderBooking {
     attendeeEmail: string;
     attendeeCountry: string;
     attendeePhone: string;
+    cancelReason?: string | null;
     createdAt?: string;
     updatedAt?: string;
     listing?: {
@@ -71,4 +82,12 @@ export interface ProviderBooking {
         country?: string;
     };
 }
+
+export interface ProviderBookingQueryParams {
+    status?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+}
+
 

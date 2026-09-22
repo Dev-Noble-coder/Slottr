@@ -1,8 +1,18 @@
 import api from "../lib/api";
-import type { ProviderHomeResponse } from "../types/provider";
+import type { ProviderHomeResponse, ProviderProfileUpdatePayload } from "../types/provider";
+
+export async function getProviderMe() {
+    const res = await api.get("api/provider/me");
+    return res.data;
+}
 
 export async function getProviderHome(): Promise<ProviderHomeResponse> {
     const res = await api.get<ProviderHomeResponse>("api/provider/home");
+    return res.data;
+}
+
+export async function updateProviderProfile(data: ProviderProfileUpdatePayload) {
+    const res = await api.patch("api/provider/profile", data);
     return res.data;
 }
 
@@ -14,3 +24,4 @@ export async function uploadProviderAvatar(data: FormData) {
     });
     return res.data;
 }
+

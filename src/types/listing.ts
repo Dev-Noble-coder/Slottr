@@ -109,3 +109,36 @@ export interface Listing {
     updatedAt?: string;
     providerId?: string | number;
 }
+
+export interface PaginationMetadata {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+}
+
+export interface PaginatedResponse<T> {
+    data: T[];
+    pagination?: PaginationMetadata;
+}
+
+export interface ListingQueryParams {
+    type?: ListingType | string;
+    search?: string;
+    city?: string;
+    state?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    page?: number;
+    limit?: number;
+}
+
+export interface MyListingQueryParams {
+    search?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+}
+

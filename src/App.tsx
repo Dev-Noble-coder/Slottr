@@ -14,11 +14,13 @@ import LandingPage from './pages/home/LandingPage'
 import ListingDetailsPage from './pages/listing/ListingDetailsPage'
 import CategoriesPage from './pages/categories/CategoriesPage'
 import HowItWorksPage from './pages/how-it-works/HowItWorksPage'
+import CustomerBookings from './pages/customer/CustomerBookings'
 import Dashboard from './pages/provider/Dashboard'
 import Listings from './pages/provider/Listings'
 import Profile from './pages/provider/Profile'
 import Settings from './pages/provider/Settings'
 import Bookings from './pages/provider/Bookings'
+import { UsersPage, PaymentsPage, AuditPage } from './pages/provider/ComingSoon'
 
 const App = () => {
   return (
@@ -31,6 +33,8 @@ const App = () => {
         <Route path="/listing/:id" element={<ListingDetailsPage />} />
         <Route path="/categories" element={<CategoriesPage />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/customer/bookings" element={<CustomerBookings />} />
+        <Route path="/bookings" element={<CustomerBookings />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/provider-login" element={<ProviderLogin />} />
@@ -48,6 +52,9 @@ const App = () => {
         <Route path="/provider/profile" element={<Profile />} />
         <Route path="/provider/settings" element={<Settings />} />
         <Route path="/provider/bookings" element={<Bookings />} />
+        <Route path="/provider/users" element={<UsersPage />} />
+        <Route path="/provider/payments" element={<PaymentsPage />} />
+        <Route path="/provider/audit" element={<AuditPage />} />
       </Routes>
     </Router>
     </>

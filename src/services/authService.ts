@@ -10,14 +10,31 @@ export async function checkTokenValidity(token: string){
 
 
 export async function createPassword(data: {}){
-    const res = await api.post("api/admin/accept-invitation", data)
-    return res.data;      
+    try {
+        const res = await api.post("api/admin/accept-invite", data);
+        return res.data;
+    } catch (err: any) {
+        if (err?.response?.status === 404) {
+            const fallback = await api.post("api/admin/accept-invitation", data);
+            return fallback.data;
+        }
+        throw err;
+    }
 }
 
 export async function login(data: any){
-    const res = await api.post("api/customer/login", data)
-    return res.data;      
+    try {
+        const res = await api.post("api/users/login", data);
+        return res.data;
+    } catch (err: any) {
+        if (err?.response?.status === 404) {
+            const fallback = await api.post("api/customer/login", data);
+            return fallback.data;
+        }
+        throw err;
+    }
 }
+
 
 export async function signup(data: any){
     const res = await api.post("api/users/signup", data)   

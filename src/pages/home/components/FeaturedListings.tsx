@@ -1,17 +1,55 @@
+import { useState, useEffect } from 'react';
 import ListingCard from '../../../components/ui/ListingCard';
 import { Link } from 'react-router-dom';
 import { useListings } from '../../../hooks/useListing';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface FeaturedListingsProps {
   activeCategory: string;
 }
 
-const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
-  const { data: listings, isLoading, isError } = useListings();
+const ITEMS_PER_PAGE = 8;
 
-  // Handle nested data structures gracefully
+const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory]);
+
+  const { data: listings, isLoading, isError } = useListings({ 
+    type: activeCategory, 
+    page: currentPage, 
+    limit: ITEMS_PER_PAGE 
+  });
+
+  // Handle nested data structures gracefully (backend paginated { data: [...], pagination: {...} } or flat array)
   const listingsArray = Array.isArray(listings?.data) ? listings.data : (Array.isArray(listings) ? listings : []);
-  const filteredListings = listingsArray.filter((listing: any) => listing.type === activeCategory || listing.category === activeCategory);
+  const filteredListings = listingsArray.filter((listing: any) => {
+    if (!activeCategory) return true;
+    return (listing.type || '').toUpperCase() === activeCategory.toUpperCase() || 
+           (listing.category || '').toUpperCase() === activeCategory.toUpperCase();
+  });
+
+  // Determine pagination metadata from backend or client fallback
+  const backendPagination = listings?.pagination;
+  const isServerPaginated = Boolean(backendPagination && backendPagination.totalPages !== undefined);
+
+  const totalPages = isServerPaginated 
+    ? Math.max(Number(backendPagination?.totalPages) || 1, 1)
+    : Math.ceil(filteredListings.length / ITEMS_PER_PAGE) || 1;
+
+  // If server paginated, data is already sliced. Otherwise slice locally
+  const displayedListings = isServerPaginated 
+    ? filteredListings 
+    : filteredListings.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 350, behavior: 'smooth' });
+  };
 
   if (isLoading) {
     return (
@@ -29,16 +67,33 @@ const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
     );
   }
 
+  // Generate visible page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      pageNumbers.push(i);
+    } else if (pageNumbers[pageNumbers.length - 1] !== '...') {
+      pageNumbers.push('...');
+    }
+  }
+
   return (
     <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px]">
-      <h2 className="text-2xl font-bold text-blue mb-8">
-        Featured in {activeCategory}
-      </h2>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-bold text-blue">
+          Featured in {activeCategory}
+        </h2>
+        {filteredListings.length > 0 && (
+          <span className="text-xs text-slate-500 font-medium px-3 py-1 bg-white border border-slate-200 rounded-full">
+            Showing Page {currentPage} of {totalPages}
+          </span>
+        )}
+      </div>
       
-      {filteredListings.length > 0 ? (
+      {displayedListings.length > 0 ? (
         <div className="flex flex-col">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredListings.map((listing: any) => {
+            {displayedListings.map((listing: any) => {
               // Extract first image if it's an array, or use directly if it's a string, else fallback
               let imageSrc = "https://placehold.co/600x400/eeeeee/1E293B?text=No+Image";
               if (listing.images && Array.isArray(listing.images) && listing.images.length > 0) {
@@ -72,33 +127,60 @@ const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
             })}
           </div>
 
-          {/* Pagination UI */}
-          <div className="mt-12 flex items-center justify-center gap-2">
-            <button className="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-50 font-medium text-sm transition-colors" disabled>
-              Previous
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-button-dark text-white font-medium text-sm transition-colors">
-              1
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
-              2
-            </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
-              3
-            </button>
-            <span className="text-slate-400 px-2">...</span>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium text-sm transition-colors">
-              8
-            </button>
-            <button className="px-4 py-2 border border-slate-200 rounded-lg text-blue hover:bg-slate-50 font-medium text-sm transition-colors">
-              Next
-            </button>
-          </div>
+          {/* Interactive Pagination UI */}
+          {totalPages > 1 && (
+            <div className="mt-12 flex items-center justify-center gap-2">
+              <button 
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-4 py-2 border border-slate-200 rounded-full text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-transparent font-medium text-xs sm:text-sm transition-all inline-flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-2xs"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Previous</span>
+              </button>
+
+              <div className="flex items-center gap-1.5 mx-1">
+                {pageNumbers.map((p, idx) => {
+                  if (p === '...') {
+                    return (
+                      <span key={`ellipsis-${idx}`} className="text-slate-400 px-2 font-bold text-xs">
+                        ...
+                      </span>
+                    );
+                  }
+
+                  const isCurrent = currentPage === p;
+                  return (
+                    <button
+                      key={`page-${p}`}
+                      onClick={() => handlePageChange(Number(p))}
+                      className={`w-9 h-9 flex items-center justify-center rounded-full font-semibold text-xs transition-all cursor-pointer ${
+                        isCurrent
+                          ? 'bg-button-dark text-white shadow-xs'
+                          : 'border border-slate-200 text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button 
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 border border-slate-200 rounded-full text-blue hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-transparent font-medium text-xs sm:text-sm transition-all inline-flex items-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-2xs"
+              >
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-48 bg-white border border-slate-200 rounded-2xl text-slate-500">
-          <p className="font-medium text-lg text-blue mb-1">No listings found</p>
-          <p className="text-sm">We couldn't find any active spaces for this category.</p>
+        <div className="flex flex-col items-center justify-center h-48 bg-white border border-slate-200 rounded-3xl text-slate-500 shadow-xs">
+          <p className="font-bold text-lg text-blue mb-1">No listings found</p>
+          <p className="text-xs text-slate-400">We couldn't find any active spaces for this category.</p>
         </div>
       )}
     </div>

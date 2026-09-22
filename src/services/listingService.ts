@@ -2,20 +2,23 @@ import api from "../lib/api";
 import type { 
     WeeklySchedule, 
     ListingAvailabilityData, 
-    PublicAvailabilityResponse 
+    PublicAvailabilityResponse,
+    ListingQueryParams,
+    MyListingQueryParams
 } from "../types/listing";
 
 // Public Listings
-export async function getListings() {
-    const res = await api.get("api/listings/get");
+export async function getListings(params?: ListingQueryParams) {
+    const res = await api.get("api/listings/get", { params });
     return res.data;
 }
 
 // Provider Listings
-export async function getMyListings() {
-    const res = await api.get("api/listings/mine");
+export async function getMyListings(params?: MyListingQueryParams) {
+    const res = await api.get("api/listings/mine", { params });
     return res.data;
 }
+
 
 // Create Listing (POST /api/listings/create as form-data)
 export async function createProviderListing(data: FormData) {

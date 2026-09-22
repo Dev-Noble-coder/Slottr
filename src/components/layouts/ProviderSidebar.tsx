@@ -38,9 +38,9 @@ const ProviderSidebar = ({ mobileOpen, setMobileOpen }: ProviderSidebarProps) =>
         { name: 'Listings', path: '/provider/listings', icon: List },
         { name: 'Bookings', path: '/provider/bookings', icon: Calendar },
         { name: 'Profile', path: '/provider/profile', icon: User },
-        { name: 'Users', path: '/provider/users', icon: Users },
-        { name: 'Payments', path: '/provider/payments', icon: CheckSquare },
-        { name: 'Audit', path: '/provider/audit', icon: FileEdit },
+        { name: 'Users', path: '/provider/users', icon: Users, badge: 'Soon' },
+        { name: 'Payments', path: '/provider/payments', icon: CheckSquare, badge: 'Soon' },
+        { name: 'Audit', path: '/provider/audit', icon: FileEdit, badge: 'Soon' },
         { name: 'Settings', path: '/provider/settings', icon: Hexagon },
     ];
 
@@ -72,7 +72,7 @@ const ProviderSidebar = ({ mobileOpen, setMobileOpen }: ProviderSidebarProps) =>
             <aside 
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`fixed lg:sticky top-0 lg:top-4 left-0 lg:ml-4 lg:mt-4 lg:mb-4 z-50 h-screen lg:h-[calc(100vh-32px)] rounded-none lg:rounded-md bg-[#1A2234] border border-slate-800 text-white flex flex-col transition-all duration-300 ease-in-out w-[260px] lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarWidth} overflow-hidden shrink-0`}
+                className={`fixed lg:sticky top-0 lg:top-4 left-0 lg:ml-4 lg:mt-4 lg:mb-4 z-50 h-screen lg:h-[calc(100vh-32px)] rounded-none lg:rounded-2xl bg-[#1A2234] border border-slate-800 text-white flex flex-col transition-all duration-300 ease-in-out w-[260px] lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarWidth} overflow-hidden shrink-0 shadow-xl`}
             >
                 {/* Logo Area */}
                 <div className="h-20 flex items-center px-5 shrink-0 pt-2">
@@ -103,13 +103,20 @@ const ProviderSidebar = ({ mobileOpen, setMobileOpen }: ProviderSidebarProps) =>
                                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-accent rounded-r-sm z-10" />
                                 )}
 
-                                <div className={`flex items-center gap-3 px-3 w-[212px] h-full rounded-md transition-all duration-150 ${isActive ? 'bg-slate-800/80 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-850'}`}>
-                                    <div className="shrink-0 w-6 h-6 flex items-center justify-center">
-                                        <Icon className="w-4 h-4" />
+                                <div className={`flex items-center justify-between px-3 w-[212px] h-full rounded-xl transition-all duration-150 ${isActive ? 'bg-slate-800/80 text-white font-semibold' : 'text-slate-400 hover:text-white hover:bg-slate-850'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <div className="shrink-0 w-6 h-6 flex items-center justify-center">
+                                            <Icon className="w-4 h-4" />
+                                        </div>
+                                        <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isExpanded || mobileOpen ? 'opacity-100' : 'opacity-0 lg:hidden'}`}>
+                                            {item.name}
+                                        </span>
                                     </div>
-                                    <span className={`text-sm font-medium whitespace-nowrap transition-opacity duration-300 ${isExpanded || mobileOpen ? 'opacity-100' : 'opacity-0 lg:hidden'}`}>
-                                        {item.name}
-                                    </span>
+                                    {item.badge && (
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30 transition-opacity duration-300 ${isExpanded || mobileOpen ? 'opacity-100' : 'opacity-0 lg:hidden'}`}>
+                                            {item.badge}
+                                        </span>
+                                    )}
                                 </div>
                             </Link>
                         );

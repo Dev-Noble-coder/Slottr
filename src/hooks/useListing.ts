@@ -15,21 +15,22 @@ import {
     deleteAvailabilityException,
     getPublicAvailability
 } from '../services/listingService';
-import type { WeeklySchedule } from '../types/listing';
+import type { WeeklySchedule, ListingQueryParams, MyListingQueryParams } from '../types/listing';
 
-export const useListings = () => {
+export const useListings = (params?: ListingQueryParams) => {
     return useQuery({
-        queryKey: ['listings'],
-        queryFn: getListings,
+        queryKey: ['listings', params],
+        queryFn: () => getListings(params),
     });
 };
 
-export const useMyListings = () => {
+export const useMyListings = (params?: MyListingQueryParams) => {
     return useQuery({
-        queryKey: ['myListings'],
-        queryFn: getMyListings,
+        queryKey: ['myListings', params],
+        queryFn: () => getMyListings(params),
     });
 };
+
 
 export const useCreateProviderListing = () => {
     const queryClient = useQueryClient();
