@@ -104,6 +104,11 @@ export interface Listing {
     location?: string;
     date?: string;
     capacity?: number | string;
+    attributes?: {
+        beds?: number | string;
+        bathrooms?: number | string;
+        [key: string]: any;
+    };
     images?: string[];
     createdAt?: string;
     updatedAt?: string;

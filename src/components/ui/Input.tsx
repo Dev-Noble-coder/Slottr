@@ -3,31 +3,35 @@ import React, { useState, type InputHTMLAttributes } from 'react';
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
+  helperText?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, type = 'text', className = '', error, ...props }, ref) => {
+  ({ label, type = 'text', className = '', error, helperText, disabled, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
     return (
-      <div className={`flex flex-col mb-4 ${className}`}>
+      <div className={`flex flex-col mb-4 ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}>
         {label && (
-          <label className="text-[#A1A1AA] text-[15px] mb-2">{label}</label>
+          <label className={`text-[15px] mb-2 ${disabled ? 'text-slate-400 font-medium' : 'text-[#A1A1AA]'}`}>{label}</label>
         )}
         <div className="relative">
           <input
             ref={ref}
             type={inputType}
+            disabled={disabled}
             className={`w-full bg-transparent border-b pb-2 text-[17px] outline-none transition-colors placeholder:text-[#A1A1AA] placeholder:font-normal ${
-              error
+              disabled
+                ? 'border-dashed border-slate-300 text-slate-400 cursor-not-allowed'
+                : error
                 ? 'border-[#CB3030] text-[#CB3030] focus:border-[#CB3030]'
                 : 'border-[#1E293B] text-[#1E293B] focus:border-[#1E293B]'
             }`}
             {...props}
           />
-          {isPassword && (
+          {isPassword && !disabled && (
             <button
               type="button"
               className="absolute right-0 bottom-2 text-[#1E293B] hover:opacity-70 transition-opacity"
@@ -53,6 +57,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
         {error && (
           <span className="text-[#CB3030] text-[14px] mt-1">{error}</span>
+        )}
+        {!error && helperText && (
+          <span className="text-slate-400 text-[12px] mt-1 italic">{helperText}</span>
         )}
       </div>
     );

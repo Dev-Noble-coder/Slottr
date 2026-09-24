@@ -48,6 +48,160 @@ const PRICING_UNITS: PricingUnit[] = [
 
 const ITEMS_PER_PAGE = 9;
 
+interface CategoryFieldConfig {
+    isCapacityApplicable: boolean;
+    isCapacityRequired: boolean;
+    capacityLabel: string;
+    capacityPlaceholder: string;
+    capacityDisabledReason: string;
+
+    isPricingUnitApplicable: boolean;
+    isPricingUnitRequired: boolean;
+    pricingUnitLabel: string;
+    pricingUnitDisabledReason: string;
+
+    isDurationApplicable: boolean;
+    durationDisabledReason: string;
+
+    isDateApplicable: boolean;
+    dateLabel: string;
+    dateDisabledReason: string;
+
+    isPropertyAttributesApplicable: boolean;
+}
+
+const getCategoryFieldConfig = (selectedType: ListingType): CategoryFieldConfig => {
+    switch (selectedType) {
+        case 'VENUE':
+            return {
+                isCapacityApplicable: true,
+                isCapacityRequired: true,
+                capacityLabel: 'Guest Capacity *',
+                capacityPlaceholder: 'e.g. 150 guests',
+                capacityDisabledReason: '',
+                isPricingUnitApplicable: true,
+                isPricingUnitRequired: false,
+                pricingUnitLabel: 'Pricing Unit (Usually DAY)',
+                pricingUnitDisabledReason: '',
+                isDurationApplicable: true,
+                durationDisabledReason: '',
+                isDateApplicable: false,
+                dateLabel: 'Event Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Venues manage dates via Availability Schedule',
+                isPropertyAttributesApplicable: false,
+            };
+        case 'RIDES':
+            return {
+                isCapacityApplicable: true,
+                isCapacityRequired: true,
+                capacityLabel: 'Passenger Seats *',
+                capacityPlaceholder: 'e.g. 4 seats',
+                capacityDisabledReason: '',
+                isPricingUnitApplicable: false,
+                isPricingUnitRequired: false,
+                pricingUnitLabel: 'Pricing Unit (Not applicable)',
+                pricingUnitDisabledReason: 'Disabled: Rides use flat fare pricing',
+                isDurationApplicable: false,
+                durationDisabledReason: 'Disabled: Not applicable for Rides (point-to-point)',
+                isDateApplicable: false,
+                dateLabel: 'Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Not applicable for Rides',
+                isPropertyAttributesApplicable: false,
+            };
+        case 'PROPERTY':
+            return {
+                isCapacityApplicable: false,
+                isCapacityRequired: false,
+                capacityLabel: 'Capacity (Not applicable)',
+                capacityPlaceholder: 'Not applicable for properties',
+                capacityDisabledReason: 'Disabled: Properties use Bedroom / Bathroom counts',
+                isPricingUnitApplicable: true,
+                isPricingUnitRequired: true,
+                pricingUnitLabel: 'Pricing Unit *',
+                pricingUnitDisabledReason: '',
+                isDurationApplicable: true,
+                durationDisabledReason: '',
+                isDateApplicable: false,
+                dateLabel: 'Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Properties manage booking dates via Availability Schedule',
+                isPropertyAttributesApplicable: true,
+            };
+        case 'ITEMS':
+            return {
+                isCapacityApplicable: false,
+                isCapacityRequired: false,
+                capacityLabel: 'Capacity (Not applicable)',
+                capacityPlaceholder: 'Not applicable for item rentals',
+                capacityDisabledReason: 'Disabled: Not applicable for Items / Equipment',
+                isPricingUnitApplicable: true,
+                isPricingUnitRequired: true,
+                pricingUnitLabel: 'Pricing Unit *',
+                pricingUnitDisabledReason: '',
+                isDurationApplicable: true,
+                durationDisabledReason: '',
+                isDateApplicable: false,
+                dateLabel: 'Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Items manage rentals via Availability Schedule',
+                isPropertyAttributesApplicable: false,
+            };
+        case 'SERVICE':
+            return {
+                isCapacityApplicable: false,
+                isCapacityRequired: false,
+                capacityLabel: 'Capacity (Not applicable)',
+                capacityPlaceholder: 'Not applicable for services',
+                capacityDisabledReason: 'Disabled: Not applicable for Services',
+                isPricingUnitApplicable: true,
+                isPricingUnitRequired: true,
+                pricingUnitLabel: 'Pricing Unit *',
+                pricingUnitDisabledReason: '',
+                isDurationApplicable: true,
+                durationDisabledReason: '',
+                isDateApplicable: false,
+                dateLabel: 'Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Services use time slots via Availability Schedule',
+                isPropertyAttributesApplicable: false,
+            };
+        case 'EVENT':
+            return {
+                isCapacityApplicable: true,
+                isCapacityRequired: false,
+                capacityLabel: 'Attendee Limit (Optional)',
+                capacityPlaceholder: 'e.g. 500 attendees',
+                capacityDisabledReason: '',
+                isPricingUnitApplicable: false,
+                isPricingUnitRequired: false,
+                pricingUnitLabel: 'Pricing Unit (Not applicable)',
+                pricingUnitDisabledReason: 'Disabled: Events use fixed ticket/entry price',
+                isDurationApplicable: false,
+                durationDisabledReason: 'Disabled: Event duration is defined by the scheduled date',
+                isDateApplicable: true,
+                dateLabel: 'Event Date *',
+                dateDisabledReason: '',
+                isPropertyAttributesApplicable: false,
+            };
+        case 'OTHERS':
+        default:
+            return {
+                isCapacityApplicable: false,
+                isCapacityRequired: false,
+                capacityLabel: 'Capacity (Not applicable)',
+                capacityPlaceholder: 'Not applicable',
+                capacityDisabledReason: 'Disabled: Not applicable for this category',
+                isPricingUnitApplicable: true,
+                isPricingUnitRequired: true,
+                pricingUnitLabel: 'Pricing Unit *',
+                pricingUnitDisabledReason: '',
+                isDurationApplicable: true,
+                durationDisabledReason: '',
+                isDateApplicable: false,
+                dateLabel: 'Date (Not applicable)',
+                dateDisabledReason: 'Disabled: Managed via Availability Schedule',
+                isPropertyAttributesApplicable: false,
+            };
+    }
+};
+
 const Listings = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const { data: listingsData, isLoading: isListingsLoading } = useMyListings({
@@ -74,6 +228,8 @@ const Listings = () => {
     const [price, setPrice] = useState('');
     const [date, setDate] = useState('');
     const [capacity, setCapacity] = useState('');
+    const [beds, setBeds] = useState('');
+    const [bathrooms, setBathrooms] = useState('');
     const [type, setType] = useState<ListingType>(LISTING_TYPES[0]);
     const [pricingUnit, setPricingUnit] = useState<PricingUnit>(PRICING_UNITS[0]);
     const [minDuration, setMinDuration] = useState('');
@@ -91,6 +247,8 @@ const Listings = () => {
     const [editPrice, setEditPrice] = useState('');
     const [editDate, setEditDate] = useState('');
     const [editCapacity, setEditCapacity] = useState('');
+    const [editBeds, setEditBeds] = useState('');
+    const [editBathrooms, setEditBathrooms] = useState('');
     const [editType, setEditType] = useState<ListingType>(LISTING_TYPES[0]);
     const [editPricingUnit, setEditPricingUnit] = useState<PricingUnit>(PRICING_UNITS[0]);
     const [editMinDuration, setEditMinDuration] = useState('');
@@ -119,6 +277,8 @@ const Listings = () => {
         setPrice('');
         setDate('');
         setCapacity('');
+        setBeds('');
+        setBathrooms('');
         setType(LISTING_TYPES[0]);
         setPricingUnit(PRICING_UNITS[0]);
         setMinDuration('');
@@ -135,6 +295,7 @@ const Listings = () => {
 
     const handleCreateListing = async (e: React.FormEvent) => {
         e.preventDefault();
+        const config = getCategoryFieldConfig(type);
         
         if (!title.trim()) {
             toast.error("Title is required.");
@@ -151,22 +312,64 @@ const Listings = () => {
             return;
         }
 
+        if (config.isCapacityRequired && (!capacity || isNaN(Number(capacity)) || Number(capacity) <= 0)) {
+            toast.error(`${config.capacityLabel.replace('*', '').trim()} is required for ${type}.`);
+            return;
+        }
+
+        if (config.isPropertyAttributesApplicable) {
+            if (!beds || isNaN(Number(beds))) {
+                toast.error("Number of bedrooms is required for Property listings.");
+                return;
+            }
+            if (!bathrooms || isNaN(Number(bathrooms))) {
+                toast.error("Number of bathrooms is required for Property listings.");
+                return;
+            }
+        }
+
+        if (type === 'EVENT' && !date) {
+            toast.error("Event date is required for Event listings.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title.trim());
         formData.append('description', description.trim());
         formData.append('price', price.toString());
         formData.append('type', type);
-        formData.append('pricingUnit', pricingUnit);
+
+        if (config.isPricingUnitApplicable) {
+            formData.append('pricingUnit', pricingUnit);
+        }
 
         const locationStr = [streetAddress.trim(), stateVal.trim(), country.trim()].filter(Boolean).join(', ');
         if (locationStr) formData.append('location', locationStr);
         if (streetAddress.trim()) formData.append('streetAddress', streetAddress.trim());
         if (stateVal.trim()) formData.append('state', stateVal.trim());
         if (country.trim()) formData.append('country', country.trim());
-        if (date) formData.append('date', date);
-        if (capacity) formData.append('capacity', capacity);
-        if (minDuration) formData.append('minDuration', minDuration);
-        if (maxDuration) formData.append('maxDuration', maxDuration);
+
+        if (config.isDateApplicable && date) {
+            formData.append('date', date);
+        }
+        if (config.isCapacityApplicable && capacity) {
+            formData.append('capacity', capacity);
+        }
+        if (config.isDurationApplicable) {
+            if (minDuration) formData.append('minDuration', minDuration);
+            if (maxDuration) formData.append('maxDuration', maxDuration);
+        }
+        if (config.isPropertyAttributesApplicable) {
+            const attributesObj = {
+                beds: Number(beds),
+                bathrooms: Number(bathrooms)
+            };
+            formData.append('attributes', JSON.stringify(attributesObj));
+            formData.append('attributes[beds]', beds);
+            formData.append('attributes[bathrooms]', bathrooms);
+            formData.append('beds', beds);
+            formData.append('bathrooms', bathrooms);
+        }
         
         // Attach multiple files under 'images' key
         imageFiles.forEach((file) => {
@@ -197,6 +400,8 @@ const Listings = () => {
         setEditPricingUnit(listing.pricingUnit || PRICING_UNITS[0]);
         setEditMinDuration(listing.minDuration ? String(listing.minDuration) : '');
         setEditMaxDuration(listing.maxDuration ? String(listing.maxDuration) : '');
+        setEditBeds(listing.attributes?.beds ? String(listing.attributes.beds) : (listing.beds ? String(listing.beds) : ''));
+        setEditBathrooms(listing.attributes?.bathrooms ? String(listing.attributes.bathrooms) : (listing.bathrooms ? String(listing.bathrooms) : ''));
         setEditImageFiles([]);
     };
 
@@ -210,6 +415,7 @@ const Listings = () => {
     const handleUpdateListing = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!editingListing) return;
+        const config = getCategoryFieldConfig(editType);
 
         if (!editTitle.trim()) {
             toast.error("Title is required.");
@@ -226,24 +432,67 @@ const Listings = () => {
             return;
         }
 
+        if (config.isCapacityRequired && (!editCapacity || isNaN(Number(editCapacity)) || Number(editCapacity) <= 0)) {
+            toast.error(`${config.capacityLabel.replace('*', '').trim()} is required for ${editType}.`);
+            return;
+        }
+
+        if (config.isPropertyAttributesApplicable) {
+            if (!editBeds || isNaN(Number(editBeds))) {
+                toast.error("Number of bedrooms is required for Property listings.");
+                return;
+            }
+            if (!editBathrooms || isNaN(Number(editBathrooms))) {
+                toast.error("Number of bathrooms is required for Property listings.");
+                return;
+            }
+        }
+
+        if (editType === 'EVENT' && !editDate) {
+            toast.error("Event date is required for Event listings.");
+            return;
+        }
+
         try {
+            const locationStr = [editStreetAddress.trim(), editStateVal.trim(), editCountry.trim()].filter(Boolean).join(', ');
+            
             if (editImageFiles.length > 0) {
                 const formData = new FormData();
                 formData.append('title', editTitle.trim());
                 formData.append('description', editDescription.trim());
                 formData.append('price', editPrice.toString());
                 formData.append('type', editType);
-                formData.append('pricingUnit', editPricingUnit);
+                
+                if (config.isPricingUnitApplicable) {
+                    formData.append('pricingUnit', editPricingUnit);
+                }
 
-                const locationStr = [editStreetAddress.trim(), editStateVal.trim(), editCountry.trim()].filter(Boolean).join(', ');
                 if (locationStr) formData.append('location', locationStr);
                 if (editStreetAddress.trim()) formData.append('streetAddress', editStreetAddress.trim());
                 if (editStateVal.trim()) formData.append('state', editStateVal.trim());
                 if (editCountry.trim()) formData.append('country', editCountry.trim());
-                if (editDate) formData.append('date', editDate);
-                if (editCapacity) formData.append('capacity', editCapacity);
-                if (editMinDuration) formData.append('minDuration', editMinDuration);
-                if (editMaxDuration) formData.append('maxDuration', editMaxDuration);
+
+                if (config.isDateApplicable && editDate) {
+                    formData.append('date', editDate);
+                }
+                if (config.isCapacityApplicable && editCapacity) {
+                    formData.append('capacity', editCapacity);
+                }
+                if (config.isDurationApplicable) {
+                    if (editMinDuration) formData.append('minDuration', editMinDuration);
+                    if (editMaxDuration) formData.append('maxDuration', editMaxDuration);
+                }
+                if (config.isPropertyAttributesApplicable) {
+                    const attributesObj = {
+                        beds: Number(editBeds),
+                        bathrooms: Number(editBathrooms)
+                    };
+                    formData.append('attributes', JSON.stringify(attributesObj));
+                    formData.append('attributes[beds]', editBeds);
+                    formData.append('attributes[bathrooms]', editBathrooms);
+                    formData.append('beds', editBeds);
+                    formData.append('bathrooms', editBathrooms);
+                }
 
                 editImageFiles.forEach((file) => {
                     formData.append('images', file);
@@ -251,21 +500,26 @@ const Listings = () => {
 
                 await updateListing({ id: editingListing.id, data: formData });
             } else {
-                const locationStr = [editStreetAddress.trim(), editStateVal.trim(), editCountry.trim()].filter(Boolean).join(', ');
                 const payload: any = {
                     title: editTitle.trim(),
                     description: editDescription.trim(),
                     price: Number(editPrice),
                     type: editType,
-                    pricingUnit: editPricingUnit,
+                    pricingUnit: config.isPricingUnitApplicable ? editPricingUnit : undefined,
                     streetAddress: editStreetAddress.trim() || undefined,
                     state: editStateVal.trim() || undefined,
                     country: editCountry.trim() || undefined,
                     location: locationStr || undefined,
-                    date: editDate || undefined,
-                    capacity: editCapacity ? Number(editCapacity) : undefined,
-                    minDuration: editMinDuration ? Number(editMinDuration) : undefined,
-                    maxDuration: editMaxDuration ? Number(editMaxDuration) : undefined,
+                    date: config.isDateApplicable ? (editDate || undefined) : undefined,
+                    capacity: config.isCapacityApplicable ? (editCapacity ? Number(editCapacity) : undefined) : undefined,
+                    minDuration: config.isDurationApplicable ? (editMinDuration ? Number(editMinDuration) : undefined) : undefined,
+                    maxDuration: config.isDurationApplicable ? (editMaxDuration ? Number(editMaxDuration) : undefined) : undefined,
+                    attributes: config.isPropertyAttributesApplicable ? {
+                        beds: Number(editBeds),
+                        bathrooms: Number(editBathrooms)
+                    } : undefined,
+                    beds: config.isPropertyAttributesApplicable ? Number(editBeds) : undefined,
+                    bathrooms: config.isPropertyAttributesApplicable ? Number(editBathrooms) : undefined,
                 };
                 await updateListing({ id: editingListing.id, data: payload });
             }
@@ -517,372 +771,476 @@ const Listings = () => {
             )}
 
             {/* Create Listing Modal */}
-            {isCreateModalOpen && (
-                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white border border-slate-300 rounded-md w-full max-w-2xl max-h-[90vh] flex flex-col my-auto">
-                        <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
-                            <div>
-                                <h2 className="text-lg font-bold text-slate-900">Create New Listing</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">Listings start as drafts until you publish them.</p>
+            {isCreateModalOpen && (() => {
+                const createConfig = getCategoryFieldConfig(type);
+                return (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                        <div className="bg-white border border-slate-300 rounded-md w-full max-w-2xl max-h-[90vh] flex flex-col my-auto">
+                            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900">Create New Listing</h2>
+                                    <p className="text-xs text-slate-500 mt-0.5">Listings start as drafts until you publish them.</p>
+                                </div>
+                                <button 
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
-                            <button 
-                                onClick={() => setIsCreateModalOpen(false)}
-                                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-6 overflow-y-auto space-y-4">
-                            <form id="create-listing-form" onSubmit={handleCreateListing} className="space-y-4">
-                                <Input 
-                                    label="Listing Title *" 
-                                    type="text" 
-                                    placeholder="e.g. Sony FX3 Cinema Camera or Conference Room A" 
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    required
-                                />
-                                
-                                <div className="flex flex-col gap-1.5">
-                                    <label className="text-xs font-semibold text-slate-700">Description * (min 10 characters)</label>
-                                    <textarea 
-                                        className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent min-h-[80px]"
-                                        placeholder="Detailed description of what is included, features, rules..."
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
+                            
+                            <div className="p-6 overflow-y-auto space-y-4">
+                                <form id="create-listing-form" onSubmit={handleCreateListing} className="space-y-4">
+                                    <Input 
+                                        label="Listing Title *" 
+                                        type="text" 
+                                        placeholder="e.g. Sony FX3 Cinema Camera or Conference Room A" 
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
                                         required
                                     />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    
                                     <div className="flex flex-col gap-1.5">
-                                        <label className="text-xs font-semibold text-slate-700">Listing Type *</label>
-                                        <select 
-                                            value={type} 
-                                            onChange={(e) => setType(e.target.value as ListingType)}
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
-                                        >
-                                            {LISTING_TYPES.map(t => (
-                                                <option key={t} value={t}>{t}</option>
-                                            ))}
-                                        </select>
+                                        <label className="text-xs font-semibold text-slate-700">Description * (min 10 characters)</label>
+                                        <textarea 
+                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent min-h-[80px]"
+                                            placeholder="Detailed description of what is included, features, rules..."
+                                            value={description}
+                                            onChange={(e) => setDescription(e.target.value)}
+                                            required
+                                        />
                                     </div>
 
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-semibold text-slate-700">Listing Type *</label>
+                                            <select 
+                                                value={type} 
+                                                onChange={(e) => setType(e.target.value as ListingType)}
+                                                className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                            >
+                                                {LISTING_TYPES.map(t => (
+                                                    <option key={t} value={t}>{t}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className={`text-xs font-semibold ${createConfig.isPricingUnitApplicable ? 'text-slate-700' : 'text-slate-400'}`}>
+                                                {createConfig.pricingUnitLabel}
+                                            </label>
+                                            {createConfig.isPricingUnitApplicable ? (
+                                                <select 
+                                                    value={pricingUnit} 
+                                                    onChange={(e) => setPricingUnit(e.target.value as PricingUnit)}
+                                                    className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                                >
+                                                    {PRICING_UNITS.map(u => (
+                                                        <option key={u} value={u}>{u}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <>
+                                                    <select 
+                                                        disabled
+                                                        className="w-full bg-slate-100/70 border border-dashed border-slate-300 rounded-md px-3 py-2 text-xs text-slate-400 cursor-not-allowed outline-none"
+                                                    >
+                                                        <option>{createConfig.pricingUnitDisabledReason.replace('Disabled: ', '')}</option>
+                                                    </select>
+                                                    <span className="text-[11px] text-slate-400 italic">{createConfig.pricingUnitDisabledReason}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <Input 
+                                            label="Price *" 
+                                            type="number" 
+                                            placeholder="e.g. 25000" 
+                                            value={price}
+                                            onChange={(e) => setPrice(e.target.value)}
+                                            required
+                                        />
+                                        <Input 
+                                            label={createConfig.capacityLabel} 
+                                            type="number" 
+                                            placeholder={createConfig.capacityPlaceholder} 
+                                            value={createConfig.isCapacityApplicable ? capacity : ''}
+                                            onChange={(e) => setCapacity(e.target.value)}
+                                            disabled={!createConfig.isCapacityApplicable}
+                                            helperText={!createConfig.isCapacityApplicable ? createConfig.capacityDisabledReason : (type === 'VENUE' ? 'Max guest headcount' : type === 'RIDES' ? 'Passenger seat count' : undefined)}
+                                            required={createConfig.isCapacityRequired}
+                                        />
+                                        <Input 
+                                            label={createConfig.dateLabel} 
+                                            type="date" 
+                                            value={createConfig.isDateApplicable ? date : ''}
+                                            onChange={(e) => setDate(e.target.value)}
+                                            disabled={!createConfig.isDateApplicable}
+                                            helperText={!createConfig.isDateApplicable ? createConfig.dateDisabledReason : 'Date of the single event'}
+                                            required={createConfig.isDateApplicable}
+                                        />
+                                    </div>
+
+                                    {/* Property specific attributes (Bedrooms & Bathrooms) */}
+                                    {createConfig.isPropertyAttributesApplicable && (
+                                        <div className="p-3.5 bg-blue-50/60 border border-blue-200/80 rounded-lg">
+                                            <div className="text-xs font-bold text-slate-800 mb-2">Property Details *</div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <Input 
+                                                    label="Bedrooms *" 
+                                                    type="number" 
+                                                    placeholder="e.g. 3" 
+                                                    value={beds}
+                                                    onChange={(e) => setBeds(e.target.value)}
+                                                    required
+                                                />
+                                                <Input 
+                                                    label="Bathrooms *" 
+                                                    type="number" 
+                                                    placeholder="e.g. 2" 
+                                                    value={bathrooms}
+                                                    onChange={(e) => setBathrooms(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input 
+                                            label={createConfig.isDurationApplicable ? "Min Duration (Hours)" : "Min Duration (Not applicable)"} 
+                                            type="number" 
+                                            placeholder={createConfig.isDurationApplicable ? "e.g. 1" : "Not applicable"} 
+                                            value={createConfig.isDurationApplicable ? minDuration : ''}
+                                            onChange={(e) => setMinDuration(e.target.value)}
+                                            disabled={!createConfig.isDurationApplicable}
+                                            helperText={!createConfig.isDurationApplicable ? createConfig.durationDisabledReason : undefined}
+                                        />
+                                        <Input 
+                                            label={createConfig.isDurationApplicable ? "Max Duration (Hours)" : "Max Duration (Not applicable)"} 
+                                            type="number" 
+                                            placeholder={createConfig.isDurationApplicable ? "e.g. 24" : "Not applicable"} 
+                                            value={createConfig.isDurationApplicable ? maxDuration : ''}
+                                            onChange={(e) => setMaxDuration(e.target.value)}
+                                            disabled={!createConfig.isDurationApplicable}
+                                            helperText={!createConfig.isDurationApplicable ? createConfig.durationDisabledReason : undefined}
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <Input 
+                                            label="Street Address" 
+                                            type="text" 
+                                            placeholder="e.g. 12 Admiralty Way" 
+                                            value={streetAddress}
+                                            onChange={(e) => setStreetAddress(e.target.value)}
+                                        />
+                                        <Input 
+                                            label="State" 
+                                            type="text" 
+                                            placeholder="e.g. Lagos" 
+                                            value={stateVal}
+                                            onChange={(e) => setStateVal(e.target.value)}
+                                        />
+                                        <Input 
+                                            label="Country" 
+                                            type="text" 
+                                            placeholder="e.g. Nigeria" 
+                                            value={country}
+                                            onChange={(e) => setCountry(e.target.value)}
+                                        />
+                                    </div>
+
+                                    {/* Images Upload */}
                                     <div className="flex flex-col gap-1.5">
-                                        <label className="text-xs font-semibold text-slate-700">Pricing Unit</label>
-                                        <select 
-                                            value={pricingUnit} 
-                                            onChange={(e) => setPricingUnit(e.target.value as PricingUnit)}
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                        <label className="text-xs font-semibold text-slate-700">Images (Max 5 files)</label>
+                                        <div 
+                                            className="border-2 border-dashed border-slate-300 rounded-md p-4 flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-slate-50 transition-colors"
+                                            onClick={() => fileInputRef.current?.click()}
                                         >
-                                            {PRICING_UNITS.map(u => (
-                                                <option key={u} value={u}>{u}</option>
-                                            ))}
-                                        </select>
+                                            <Upload className="w-5 h-5 text-slate-400 mb-1" />
+                                            <span className="text-xs font-medium text-slate-600">
+                                                {imageFiles.length > 0 ? `${imageFiles.length} file(s) selected` : 'Click to select image files'}
+                                            </span>
+                                            <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP up to 5MB each</span>
+                                        </div>
+                                        <input 
+                                            type="file" 
+                                            ref={fileInputRef} 
+                                            className="hidden" 
+                                            accept="image/*" 
+                                            multiple 
+                                            onChange={handleFileChange}
+                                        />
                                     </div>
-                                </div>
+                                </form>
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Input 
-                                        label="Price *" 
-                                        type="number" 
-                                        placeholder="e.g. 25000" 
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                        required
-                                    />
-                                    <Input 
-                                        label="Capacity (Optional)" 
-                                        type="number" 
-                                        placeholder="e.g. 1" 
-                                        value={capacity}
-                                        onChange={(e) => setCapacity(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Date (Single-date events only)" 
-                                        type="date" 
-                                        value={date}
-                                        onChange={(e) => setDate(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input 
-                                        label="Min Duration" 
-                                        type="number" 
-                                        placeholder="e.g. 1" 
-                                        value={minDuration}
-                                        onChange={(e) => setMinDuration(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Max Duration" 
-                                        type="number" 
-                                        placeholder="e.g. 24" 
-                                        value={maxDuration}
-                                        onChange={(e) => setMaxDuration(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Input 
-                                        label="Street Address" 
-                                        type="text" 
-                                        placeholder="e.g. 12 Admiralty Way" 
-                                        value={streetAddress}
-                                        onChange={(e) => setStreetAddress(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="State" 
-                                        type="text" 
-                                        placeholder="e.g. Lagos" 
-                                        value={stateVal}
-                                        onChange={(e) => setStateVal(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Country" 
-                                        type="text" 
-                                        placeholder="e.g. Nigeria" 
-                                        value={country}
-                                        onChange={(e) => setCountry(e.target.value)}
-                                    />
-                                </div>
-
-                                {/* Images Upload */}
-                                <div className="flex flex-col gap-1.5">
-                                    <label className="text-xs font-semibold text-slate-700">Images (Max 5 files)</label>
-                                    <div 
-                                        className="border-2 border-dashed border-slate-300 rounded-md p-4 flex flex-col items-center justify-center cursor-pointer hover:border-accent hover:bg-slate-50 transition-colors"
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        <Upload className="w-5 h-5 text-slate-400 mb-1" />
-                                        <span className="text-xs font-medium text-slate-600">
-                                            {imageFiles.length > 0 ? `${imageFiles.length} file(s) selected` : 'Click to select image files'}
-                                        </span>
-                                        <span className="text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP up to 5MB each</span>
-                                    </div>
-                                    <input 
-                                        type="file" 
-                                        ref={fileInputRef} 
-                                        className="hidden" 
-                                        accept="image/*" 
-                                        multiple 
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                            </form>
-                        </div>
-
-                        <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2.5">
-                            <button 
-                                type="button"
-                                onClick={() => setIsCreateModalOpen(false)}
-                                className="px-4 py-2 rounded-md text-xs font-medium text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                type="submit"
-                                form="create-listing-form"
-                                disabled={isCreating}
-                                className="px-5 py-2 rounded-md text-xs font-semibold text-white bg-blue hover:bg-button-dark transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                            >
-                                {isCreating ? (
-                                    <>
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        Creating...
-                                    </>
-                                ) : 'Create Draft Listing'}
-                            </button>
+                            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2.5">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="px-4 py-2 rounded-md text-xs font-medium text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    form="create-listing-form"
+                                    disabled={isCreating}
+                                    className="px-5 py-2 rounded-md text-xs font-semibold text-white bg-blue hover:bg-button-dark transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                                >
+                                    {isCreating ? (
+                                        <>
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            Creating...
+                                        </>
+                                    ) : 'Create Draft Listing'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* Edit Listing Modal (PATCH /api/provider/listings/:id) */}
-            {editingListing && (
-                <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
-                    <div className="bg-white border border-slate-300 rounded-md w-full max-w-2xl max-h-[90vh] flex flex-col my-auto">
-                        <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
-                            <div>
-                                <h2 className="text-lg font-bold text-slate-900">Edit Listing</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">Update details, pricing, or photos for this listing.</p>
+            {editingListing && (() => {
+                const editConfig = getCategoryFieldConfig(editType);
+                return (
+                    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto">
+                        <div className="bg-white border border-slate-300 rounded-md w-full max-w-2xl max-h-[90vh] flex flex-col my-auto">
+                            <div className="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-white sticky top-0 z-10">
+                                <div>
+                                    <h2 className="text-lg font-bold text-slate-900">Edit Listing</h2>
+                                    <p className="text-xs text-slate-500 mt-0.5">Update details, pricing, or photos for this listing.</p>
+                                </div>
+                                <button 
+                                    onClick={() => setEditingListing(null)}
+                                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
                             </div>
-                            <button 
-                                onClick={() => setEditingListing(null)}
-                                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-                        
-                        <div className="p-6 overflow-y-auto space-y-4">
-                            <form id="edit-listing-form" onSubmit={handleUpdateListing} className="space-y-4">
-                                <Input 
-                                    label="Listing Title *" 
-                                    type="text" 
-                                    placeholder="e.g. Sony FX3 Cinema Camera" 
-                                    value={editTitle}
-                                    onChange={(e) => setEditTitle(e.target.value)}
-                                    required
-                                />
-                                
-                                <div className="flex flex-col gap-1.5">
-                                    <label className="text-xs font-semibold text-slate-700">Description * (min 10 characters)</label>
-                                    <textarea 
-                                        className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent min-h-[80px]"
-                                        placeholder="Detailed description..."
-                                        value={editDescription}
-                                        onChange={(e) => setEditDescription(e.target.value)}
+                            
+                            <div className="p-6 overflow-y-auto space-y-4">
+                                <form id="edit-listing-form" onSubmit={handleUpdateListing} className="space-y-4">
+                                    <Input 
+                                        label="Listing Title *" 
+                                        type="text" 
+                                        placeholder="e.g. Sony FX3 Cinema Camera" 
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
                                         required
                                     />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    
                                     <div className="flex flex-col gap-1.5">
-                                        <label className="text-xs font-semibold text-slate-700">Listing Type *</label>
-                                        <select 
-                                            value={editType} 
-                                            onChange={(e) => setEditType(e.target.value as ListingType)}
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                        <label className="text-xs font-semibold text-slate-700">Description * (min 10 characters)</label>
+                                        <textarea 
+                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent min-h-[80px]"
+                                            placeholder="Detailed description..."
+                                            value={editDescription}
+                                            onChange={(e) => setEditDescription(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className="text-xs font-semibold text-slate-700">Listing Type *</label>
+                                            <select 
+                                                value={editType} 
+                                                onChange={(e) => setEditType(e.target.value as ListingType)}
+                                                className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                            >
+                                                {LISTING_TYPES.map(t => (
+                                                    <option key={t} value={t}>{t}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="flex flex-col gap-1.5">
+                                            <label className={`text-xs font-semibold ${editConfig.isPricingUnitApplicable ? 'text-slate-700' : 'text-slate-400'}`}>
+                                                {editConfig.pricingUnitLabel}
+                                            </label>
+                                            {editConfig.isPricingUnitApplicable ? (
+                                                <select 
+                                                    value={editPricingUnit} 
+                                                    onChange={(e) => setEditPricingUnit(e.target.value as PricingUnit)}
+                                                    className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
+                                                >
+                                                    {PRICING_UNITS.map(u => (
+                                                        <option key={u} value={u}>{u}</option>
+                                                    ))}
+                                                </select>
+                                            ) : (
+                                                <>
+                                                    <select 
+                                                        disabled
+                                                        className="w-full bg-slate-100/70 border border-dashed border-slate-300 rounded-md px-3 py-2 text-xs text-slate-400 cursor-not-allowed outline-none"
+                                                    >
+                                                        <option>{editConfig.pricingUnitDisabledReason.replace('Disabled: ', '')}</option>
+                                                    </select>
+                                                    <span className="text-[11px] text-slate-400 italic">{editConfig.pricingUnitDisabledReason}</span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <Input 
+                                            label="Price *" 
+                                            type="number" 
+                                            placeholder="e.g. 25000" 
+                                            value={editPrice}
+                                            onChange={(e) => setEditPrice(e.target.value)}
+                                            required
+                                        />
+                                        <Input 
+                                            label={editConfig.capacityLabel} 
+                                            type="number" 
+                                            placeholder={editConfig.capacityPlaceholder} 
+                                            value={editConfig.isCapacityApplicable ? editCapacity : ''}
+                                            onChange={(e) => setEditCapacity(e.target.value)}
+                                            disabled={!editConfig.isCapacityApplicable}
+                                            helperText={!editConfig.isCapacityApplicable ? editConfig.capacityDisabledReason : (editType === 'VENUE' ? 'Max guest headcount' : editType === 'RIDES' ? 'Passenger seat count' : undefined)}
+                                            required={editConfig.isCapacityRequired}
+                                        />
+                                        <Input 
+                                            label={editConfig.dateLabel} 
+                                            type="date" 
+                                            value={editConfig.isDateApplicable ? editDate : ''}
+                                            onChange={(e) => setEditDate(e.target.value)}
+                                            disabled={!editConfig.isDateApplicable}
+                                            helperText={!editConfig.isDateApplicable ? editConfig.dateDisabledReason : 'Date of the single event'}
+                                            required={editConfig.isDateApplicable}
+                                        />
+                                    </div>
+
+                                    {/* Property specific attributes (Bedrooms & Bathrooms) */}
+                                    {editConfig.isPropertyAttributesApplicable && (
+                                        <div className="p-3.5 bg-blue-50/60 border border-blue-200/80 rounded-lg">
+                                            <div className="text-xs font-bold text-slate-800 mb-2">Property Details *</div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <Input 
+                                                    label="Bedrooms *" 
+                                                    type="number" 
+                                                    placeholder="e.g. 3" 
+                                                    value={editBeds}
+                                                    onChange={(e) => setEditBeds(e.target.value)}
+                                                    required
+                                                />
+                                                <Input 
+                                                    label="Bathrooms *" 
+                                                    type="number" 
+                                                    placeholder="e.g. 2" 
+                                                    value={editBathrooms}
+                                                    onChange={(e) => setEditBathrooms(e.target.value)}
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input 
+                                            label={editConfig.isDurationApplicable ? "Min Duration (Hours)" : "Min Duration (Not applicable)"} 
+                                            type="number" 
+                                            placeholder={editConfig.isDurationApplicable ? "e.g. 1" : "Not applicable"} 
+                                            value={editConfig.isDurationApplicable ? editMinDuration : ''}
+                                            onChange={(e) => setEditMinDuration(e.target.value)}
+                                            disabled={!editConfig.isDurationApplicable}
+                                            helperText={!editConfig.isDurationApplicable ? editConfig.durationDisabledReason : undefined}
+                                        />
+                                        <Input 
+                                            label={editConfig.isDurationApplicable ? "Max Duration (Hours)" : "Max Duration (Not applicable)"} 
+                                            type="number" 
+                                            placeholder={editConfig.isDurationApplicable ? "e.g. 24" : "Not applicable"} 
+                                            value={editConfig.isDurationApplicable ? editMaxDuration : ''}
+                                            onChange={(e) => setEditMaxDuration(e.target.value)}
+                                            disabled={!editConfig.isDurationApplicable}
+                                            helperText={!editConfig.isDurationApplicable ? editConfig.durationDisabledReason : undefined}
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <Input 
+                                            label="Street Address" 
+                                            type="text" 
+                                            placeholder="123 Main St" 
+                                            value={editStreetAddress}
+                                            onChange={(e) => setEditStreetAddress(e.target.value)}
+                                        />
+                                        <Input 
+                                            label="State / Province" 
+                                            type="text" 
+                                            placeholder="California" 
+                                            value={editStateVal}
+                                            onChange={(e) => setEditStateVal(e.target.value)}
+                                        />
+                                        <Input 
+                                            label="Country" 
+                                            type="text" 
+                                            placeholder="USA" 
+                                            value={editCountry}
+                                            onChange={(e) => setEditCountry(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold text-slate-700">Update Images (Optional)</label>
+                                        <div 
+                                            onClick={() => editFileInputRef.current?.click()}
+                                            className="border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 rounded-md p-5 flex flex-col items-center justify-center cursor-pointer transition-colors"
                                         >
-                                            {LISTING_TYPES.map(t => (
-                                                <option key={t} value={t}>{t}</option>
-                                            ))}
-                                        </select>
+                                            <Upload className="w-6 h-6 text-slate-400 mb-1.5" />
+                                            <p className="text-xs font-medium text-slate-700">Click to upload new photos</p>
+                                            <p className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5 images</p>
+                                            {editImageFiles.length > 0 && (
+                                                <span className="mt-2 text-xs font-bold text-accent">
+                                                    {editImageFiles.length} new image(s) selected
+                                                </span>
+                                            )}
+                                        </div>
+                                        <input 
+                                            ref={editFileInputRef}
+                                            type="file" 
+                                            className="hidden" 
+                                            accept="image/*" 
+                                            multiple 
+                                            onChange={handleEditFileChange}
+                                        />
                                     </div>
+                                </form>
+                            </div>
 
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-xs font-semibold text-slate-700">Pricing Unit</label>
-                                        <select 
-                                            value={editPricingUnit} 
-                                            onChange={(e) => setEditPricingUnit(e.target.value as PricingUnit)}
-                                            className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-xs outline-none focus:border-accent"
-                                        >
-                                            {PRICING_UNITS.map(u => (
-                                                <option key={u} value={u}>{u}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Input 
-                                        label="Price *" 
-                                        type="number" 
-                                        placeholder="e.g. 25000" 
-                                        value={editPrice}
-                                        onChange={(e) => setEditPrice(e.target.value)}
-                                        required
-                                    />
-                                    <Input 
-                                        label="Capacity (Optional)" 
-                                        type="number" 
-                                        placeholder="e.g. 1" 
-                                        value={editCapacity}
-                                        onChange={(e) => setEditCapacity(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Date (Single-date events only)" 
-                                        type="date" 
-                                        value={editDate}
-                                        onChange={(e) => setEditDate(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <Input 
-                                        label="Min Duration" 
-                                        type="number" 
-                                        placeholder="e.g. 1" 
-                                        value={editMinDuration}
-                                        onChange={(e) => setEditMinDuration(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Max Duration" 
-                                        type="number" 
-                                        placeholder="e.g. 24" 
-                                        value={editMaxDuration}
-                                        onChange={(e) => setEditMaxDuration(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <Input 
-                                        label="Street Address" 
-                                        type="text" 
-                                        placeholder="123 Main St" 
-                                        value={editStreetAddress}
-                                        onChange={(e) => setEditStreetAddress(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="State / Province" 
-                                        type="text" 
-                                        placeholder="California" 
-                                        value={editStateVal}
-                                        onChange={(e) => setEditStateVal(e.target.value)}
-                                    />
-                                    <Input 
-                                        label="Country" 
-                                        type="text" 
-                                        placeholder="USA" 
-                                        value={editCountry}
-                                        onChange={(e) => setEditCountry(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="space-y-1.5">
-                                    <label className="text-xs font-semibold text-slate-700">Update Images (Optional)</label>
-                                    <div 
-                                        onClick={() => editFileInputRef.current?.click()}
-                                        className="border-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50 rounded-md p-5 flex flex-col items-center justify-center cursor-pointer transition-colors"
-                                    >
-                                        <Upload className="w-6 h-6 text-slate-400 mb-1.5" />
-                                        <p className="text-xs font-medium text-slate-700">Click to upload new photos</p>
-                                        <p className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5 images</p>
-                                        {editImageFiles.length > 0 && (
-                                            <span className="mt-2 text-xs font-bold text-accent">
-                                                {editImageFiles.length} new image(s) selected
-                                            </span>
-                                        )}
-                                    </div>
-                                    <input 
-                                        ref={editFileInputRef}
-                                        type="file" 
-                                        className="hidden" 
-                                        accept="image/*" 
-                                        multiple 
-                                        onChange={handleEditFileChange}
-                                    />
-                                </div>
-                            </form>
-                        </div>
-
-                        <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2.5">
-                            <button 
-                                type="button"
-                                onClick={() => setEditingListing(null)}
-                                className="px-4 py-2 rounded-md text-xs font-medium text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                type="submit"
-                                form="edit-listing-form"
-                                disabled={isUpdating}
-                                className="px-5 py-2 rounded-md text-xs font-semibold text-white bg-blue hover:bg-button-dark transition-colors flex items-center gap-1.5 disabled:opacity-50"
-                            >
-                                {isUpdating ? (
-                                    <>
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        Saving...
-                                    </>
-                                ) : 'Save Changes'}
-                            </button>
+                            <div className="px-6 py-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2.5">
+                                <button 
+                                    type="button"
+                                    onClick={() => setEditingListing(null)}
+                                    className="px-4 py-2 rounded-md text-xs font-medium text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit"
+                                    form="edit-listing-form"
+                                    disabled={isUpdating}
+                                    className="px-5 py-2 rounded-md text-xs font-semibold text-white bg-blue hover:bg-button-dark transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                                >
+                                    {isUpdating ? (
+                                        <>
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            Saving...
+                                        </>
+                                    ) : 'Save Changes'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* Availability Engine Modal */}
             {selectedListingForAvailability && (
