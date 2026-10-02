@@ -16,7 +16,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
-  const { data, isSuccess } = useCustomerDashboard();
+  const { data } = useCustomerDashboard();
 
   const hasToken = !!Cookies.get('accessToken');
   const cookieUser = (() => {

@@ -3,7 +3,6 @@ import ProviderLayout from '../../components/layouts/ProviderLayout';
 import { useProviderMe, useProviderHome, useProviderBookings } from '../../hooks/useProvider';
 import { useMyListings } from '../../hooks/useListing';
 import { 
-    Loader2, 
     Calendar, 
     List, 
     Clock, 
