@@ -27,6 +27,7 @@ import {
 import { toast } from 'sonner';
 import Input from '../../components/ui/Input';
 import { AvailabilityModal } from './components/AvailabilityModal';
+import { ProviderListingsGridSkeleton } from '../../components/ui/Skeleton';
 import type { ListingType, PricingUnit } from '../../types/listing';
 
 const LISTING_TYPES: ListingType[] = [
@@ -586,9 +587,7 @@ const Listings = () => {
             </div>
 
             {isListingsLoading ? (
-                <div className="flex justify-center items-center py-24">
-                    <Loader2 className="w-8 h-8 animate-spin text-accent" />
-                </div>
+                <ProviderListingsGridSkeleton count={6} />
             ) : listings.length > 0 ? (
                 <div className="flex flex-col">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

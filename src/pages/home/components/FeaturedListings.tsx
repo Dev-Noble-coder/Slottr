@@ -3,6 +3,7 @@ import ListingCard from '../../../components/ui/ListingCard';
 import { Link } from 'react-router-dom';
 import { useListings } from '../../../hooks/useListing';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ListingsGridSkeleton } from '../../../components/ui/Skeleton';
 
 interface FeaturedListingsProps {
   activeCategory: string;
@@ -53,8 +54,11 @@ const FeaturedListings = ({ activeCategory }: FeaturedListingsProps) => {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px] flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue border-t-transparent rounded-full"></div>
+      <div className="w-full max-w-[1440px] mx-auto px-4 mt-16 mb-24 min-h-[400px]">
+        <div className="flex items-center justify-between mb-8">
+          <div className="h-8 w-60 bg-slate-200/80 rounded-lg animate-shimmer" />
+        </div>
+        <ListingsGridSkeleton count={8} />
       </div>
     );
   }

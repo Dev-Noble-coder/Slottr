@@ -18,7 +18,9 @@ const Navbar = () => {
   const location = useLocation();
   const { data, isSuccess } = useCustomerDashboard();
 
+  const hasToken = !!Cookies.get('accessToken');
   const cookieUser = (() => {
+    if (!hasToken) return null;
     try {
       const raw = Cookies.get('user');
       return raw ? JSON.parse(raw) : null;
@@ -27,9 +29,8 @@ const Navbar = () => {
     }
   })();
 
-  const user = data?.data || data?.user || data || cookieUser;
-  const hasToken = !!Cookies.get('accessToken');
-  const isAuthenticated = Boolean((isSuccess && user) || (hasToken && (user || cookieUser)) || hasToken);
+  const user = hasToken ? (data?.data || data?.user || (data?.role ? data : null) || cookieUser) : null;
+  const isAuthenticated = Boolean(hasToken && user);
 
   const handleLogout = async () => {
     try {

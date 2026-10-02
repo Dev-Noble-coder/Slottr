@@ -5,6 +5,7 @@ import Navbar from '../../components/layouts/Navbar';
 import Footer from '../../components/layouts/Footer';
 import Modal from '../../components/ui/Modal';
 import BookingAuthModal from './components/BookingAuthModal';
+import { ListingDetailsSkeleton } from '../../components/ui/Skeleton';
 import { useCustomerDashboard } from '../../hooks/useCustomer';
 import { useListings, usePublicAvailability } from '../../hooks/useListing';
 import { toast } from 'sonner';
@@ -185,8 +186,8 @@ const ListingDetailsPage = () => {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50 font-sans">
         <Navbar />
-        <main className="flex-grow flex items-center justify-center">
-          <div className="animate-spin h-12 w-12 border-4 border-blue border-t-transparent rounded-full"></div>
+        <main className="flex-grow">
+          <ListingDetailsSkeleton />
         </main>
         <Footer />
       </div>

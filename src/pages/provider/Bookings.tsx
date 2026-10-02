@@ -9,6 +9,7 @@ import {
 import { 
     Loader2, 
     Calendar, 
+    CalendarCheck,
     Check, 
     X, 
     CheckCircle2, 
@@ -23,7 +24,8 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatReadableDate, formatBookingTimeRange, formatCurrency } from '../../lib/formatters';
+import { formatReadableDate, formatBookingDateRange, formatBookingTimeRange, formatCurrency } from '../../lib/formatters';
+import { ProviderBookingsGridSkeleton } from '../../components/ui/Skeleton';
 
 const STATUS_TABS = ['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'] as const;
 type StatusTab = typeof STATUS_TABS[number];
@@ -162,14 +164,15 @@ const ProviderBookings = () => {
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center items-center py-24">
-                    <Loader2 className="w-8 h-8 animate-spin text-accent" />
-                </div>
+                <ProviderBookingsGridSkeleton count={6} />
             ) : bookings.length > 0 ? (
                 <div className="flex flex-col">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bookings.map((booking: any) => {
-                        const dateFormatted = formatReadableDate(booking.bookingDate || booking.date || booking.createdAt);
+                        const dateFormatted = formatBookingDateRange(
+                            booking.startAt || booking.bookingDate || booking.date || booking.startDate,
+                            booking.endAt || booking.endDate
+                        );
                         
                         const timeFormatted = formatBookingTimeRange(
                             booking.startAt || booking.bookingDate || booking.startTime,
@@ -228,6 +231,14 @@ const ProviderBookings = () => {
                                             <div className="flex items-center justify-between">
                                                 <span className="text-slate-400">Duration</span>
                                                 <span className="font-semibold text-slate-900">{booking.durationHours} {booking.durationHours === 1 ? 'hour' : 'hours'}</span>
+                                            </div>
+                                        )}
+                                        {booking.createdAt && (
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-slate-400 flex items-center gap-1.5">
+                                                    <CalendarCheck className="w-3.5 h-3.5 text-slate-400" /> Booked On
+                                                </span>
+                                                <span className="font-medium text-slate-600">{formatReadableDate(booking.createdAt)}</span>
                                             </div>
                                         )}
                                         {bookingPrice !== undefined && bookingPrice !== null && (

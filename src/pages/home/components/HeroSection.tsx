@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { Calendar, ArrowRight, Sparkles } from 'lucide-react';
 import { useCustomerDashboard } from '../../../hooks/useCustomer';
-
 const HeroSection = () => {
   const { data } = useCustomerDashboard();
+  const hasToken = !!Cookies.get('accessToken');
   const cookieUser = (() => {
+    if (!hasToken) return null;
     try {
       const raw = Cookies.get('user');
       return raw ? JSON.parse(raw) : null;
@@ -15,9 +16,8 @@ const HeroSection = () => {
     }
   })();
 
-  const user = data?.data || data?.user || data || cookieUser;
-  const hasToken = !!Cookies.get('accessToken');
-  const isAuthenticated = Boolean(hasToken || user);
+  const user = hasToken ? (data?.data || data?.user || (data?.role ? data : null) || cookieUser) : null;
+  const isAuthenticated = Boolean(hasToken && user);
   const firstName = user?.firstName || (user?.fullName ? user.fullName.split(' ')[0] : null) || 'there';
 
   return (

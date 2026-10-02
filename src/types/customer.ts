@@ -5,8 +5,10 @@ export interface CustomerBooking {
     listingId: string | number;
     customerId?: string | number;
     status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
-    bookingDate: string;
-    durationHours: number;
+    startAt?: string;
+    endAt?: string;
+    bookingDate?: string;
+    durationHours?: number;
     amount?: number;
     totalPrice?: number;
     attendeeFirstName?: string;

@@ -1,7 +1,3 @@
-/**
- * Formats an ISO string, date string, or Date object into a clean readable date string.
- * Example: "2026-09-11T15:48:15.288Z" -> "Fri, Sep 11, 2026"
- */
 export function formatReadableDate(
   rawDate?: string | Date | null,
   options?: Intl.DateTimeFormatOptions
@@ -20,6 +16,43 @@ export function formatReadableDate(
     return String(rawDate);
   }
 }
+
+/**
+ * Formats a booking date range (start and optional end).
+ * If on the same calendar day, returns that day's formatted date.
+ * If spanning multiple days, returns "Oct 5, 2026 – Oct 8, 2026".
+ */
+export function formatBookingDateRange(
+  start?: string | Date | null,
+  end?: string | Date | null
+): string {
+  if (!start && !end) return 'N/A';
+
+  if (start && end) {
+    try {
+      const startDate = typeof start === 'string' ? new Date(start) : start;
+      const endDate = typeof end === 'string' ? new Date(end) : end;
+
+      if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+        const isSameDay =
+          startDate.getFullYear() === endDate.getFullYear() &&
+          startDate.getMonth() === endDate.getMonth() &&
+          startDate.getDate() === endDate.getDate();
+
+        if (isSameDay) {
+          return formatReadableDate(startDate);
+        }
+
+        return `${formatReadableDate(startDate, { month: 'short', day: 'numeric', year: 'numeric' })} – ${formatReadableDate(endDate, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      }
+    } catch {
+      // fallback
+    }
+  }
+
+  return formatReadableDate(start || end);
+}
+
 
 /**
  * Formats a single time string or ISO string into a clean 12-hour AM/PM format.

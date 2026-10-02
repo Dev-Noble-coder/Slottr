@@ -31,7 +31,9 @@ export interface ProviderTodaysScheduleItem {
     id: string | number;
     listingId?: string | number;
     status: string;
-    bookingDate: string;
+    startAt?: string;
+    endAt?: string;
+    bookingDate?: string;
     durationHours?: number;
     amount?: number;
     attendeeFirstName?: string;
@@ -60,8 +62,10 @@ export interface ProviderBooking {
     listingId: string | number;
     customerId?: string | number | null;
     status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
-    bookingDate: string;
-    durationHours: number;
+    startAt?: string;
+    endAt?: string;
+    bookingDate?: string;
+    durationHours?: number;
     amount: number;
     attendeeFirstName: string;
     attendeeLastName: string;

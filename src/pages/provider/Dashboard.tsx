@@ -23,6 +23,7 @@ import {
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { formatReadableDate, formatBookingTimeRange, formatCurrency } from '../../lib/formatters';
+import { ProviderDashboardSkeleton } from '../../components/ui/Skeleton';
 
 const Dashboard = () => {
     const { data: meData, isLoading: isMeLoading } = useProviderMe();
@@ -98,9 +99,7 @@ const Dashboard = () => {
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center items-center py-24">
-                    <Loader2 className="w-8 h-8 animate-spin text-accent" />
-                </div>
+                <ProviderDashboardSkeleton />
             ) : (
                 <div className="space-y-6">
                     {/* Provider Quick Profile Card */}
@@ -471,10 +470,10 @@ const Dashboard = () => {
                                                                 <span className="font-medium text-slate-700">
                                                                     {booking.attendeeFirstName || 'Customer'} {booking.attendeeLastName || ''}
                                                                 </span>
-                                                                {booking.bookingDate && (
+                                                                {(booking.startAt || booking.bookingDate || booking.date) && (
                                                                     <>
                                                                         <span>•</span>
-                                                                        <span>{formatReadableDate(booking.bookingDate, { month: 'short', day: 'numeric' })}</span>
+                                                                        <span>{formatReadableDate(booking.startAt || booking.bookingDate || booking.date, { month: 'short', day: 'numeric' })}</span>
                                                                     </>
                                                                 )}
                                                                 {booking.durationHours && (

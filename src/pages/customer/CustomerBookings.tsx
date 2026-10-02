@@ -6,6 +6,7 @@ import { useCustomerBookings } from '../../hooks/useCustomer';
 import { useCancelBooking } from '../../hooks/useBooking';
 import { 
     Calendar, 
+    CalendarCheck,
     Clock, 
     MapPin, 
     Search, 
@@ -21,7 +22,8 @@ import {
     ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatReadableDate, formatBookingTimeRange, formatCurrency } from '../../lib/formatters';
+import { formatReadableDate, formatBookingDateRange, formatBookingTimeRange, formatCurrency } from '../../lib/formatters';
+import { CustomerBookingsGridSkeleton } from '../../components/ui/Skeleton';
 
 const STATUS_TABS = ['ALL', 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'] as const;
 type StatusTab = typeof STATUS_TABS[number];
@@ -135,16 +137,17 @@ const CustomerBookings = () => {
 
                 {/* Content */}
                 {isLoading ? (
-                    <div className="flex justify-center items-center py-28">
-                        <Loader2 className="w-8 h-8 animate-spin text-accent" />
-                    </div>
+                    <CustomerBookingsGridSkeleton count={6} />
                 ) : bookings.length > 0 ? (
                     <div className="flex flex-col">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {bookings.map((booking: any) => {
                             const listing = booking.listing || booking.Listing || {};
                             const normalizedStatus = String(booking.status || '').toUpperCase().trim();
-                            const dateFormatted = formatReadableDate(booking.bookingDate || booking.date || booking.createdAt);
+                            const dateFormatted = formatBookingDateRange(
+                                booking.startAt || booking.bookingDate || booking.date || booking.startDate,
+                                booking.endAt || booking.endDate
+                            );
                             const timeFormatted = formatBookingTimeRange(
                                 booking.startAt || booking.bookingDate || booking.startTime,
                                 booking.endAt || booking.endTime,
@@ -222,6 +225,14 @@ const CustomerBookings = () => {
                                                     <div className="flex items-center justify-between">
                                                         <span className="text-slate-400">Duration</span>
                                                         <span className="font-semibold text-slate-800">{booking.durationHours} {booking.durationHours === 1 ? 'hour' : 'hours'}</span>
+                                                    </div>
+                                                )}
+                                                {booking.createdAt && (
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-slate-400 flex items-center gap-1">
+                                                            <CalendarCheck className="w-3.5 h-3.5 text-slate-400" /> Booked On
+                                                        </span>
+                                                        <span className="font-medium text-slate-600">{formatReadableDate(booking.createdAt)}</span>
                                                     </div>
                                                 )}
                                                 {price !== undefined && price !== null && (
